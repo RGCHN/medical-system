@@ -1,0 +1,26 @@
+@import './common/reset';
+
+.layout{
+  margin: 1rem;
+  .ant-layout-header{
+    background-color: #fefefe;
+    display: flex;
+    align-items: center;
+    line-height: inherit;
+
+    .title{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .header-nav-container{
+      display: flex;
+      align-items: center;
+      width: 80%;
+      justify-content: space-between;
+    }
+
+  }
+}

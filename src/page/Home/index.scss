@@ -1,0 +1,28 @@
+.home-page{
+
+  .nav-card-container{
+
+
+    .nav-card{
+      color: #ffffff;
+      width: 380px;
+      height: 180px;
+      border-radius: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .icon-container{
+        font-size: 30px;
+      }
+
+      .card-title{
+        font-size: 36px;
+      }
+
+      .item-description{
+        font-size: 16px;
+      }
+    }
+  }
+}
