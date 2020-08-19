@@ -1,4 +1,4 @@
-@import './variable';
+@import 'variable';
 //reset
 *{
   box-sizing: border-box;
@@ -39,9 +39,10 @@ a{
 //定义字体大小
 @each $sizeKey,$size in $font-sizes{
   .fs-#{$sizeKey}{
-    font-size:$size * $base-font-size;
+    font-size:$size;
   }
 }
+
 //文字相关
 .text-ellipsis{
   display: inline-block;

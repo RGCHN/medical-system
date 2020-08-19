@@ -1,6 +1,6 @@
 import React from "react";
-// eslint-disable-next-line
-import { Table, Space, Radio, Tag} from 'antd';
+import { withRouter } from 'react-router-dom';
+import { Table, Space, Radio, Tag, Button} from 'antd';
 import './index.scss'
 
 
@@ -47,7 +47,7 @@ const data = [
   },
 ];
 
-export default class DataManager extends React.Component {
+class DataManager extends React.Component {
   state = {
     filteredInfo: null,
     sortedInfo: null,
@@ -61,6 +61,10 @@ export default class DataManager extends React.Component {
       sortedInfo: sorter,
     });
   };
+  
+  goPatientEdit = recordId => {
+    this.props.history.push(`/patientEdit/${recordId}`);
+  }
   
   
   render() {
@@ -129,7 +133,7 @@ export default class DataManager extends React.Component {
         ellipsis: true,
       },
       {
-        title: '疾病诊断',
+        title: '脑卒中分类',
         dataIndex: 'address',
         key: 'address',
         filteredValue: filteredInfo.address || null,
@@ -172,11 +176,12 @@ export default class DataManager extends React.Component {
       },
       {
         title: '操作',
+        dataIndex: 'recordId',
         key: 'action',
-        render: (text, record) => (
+        render: recordId => (
           <Space size="middle">
-            <span>编辑</span>
-            <span>删除</span>
+            <Button>查看</Button>
+            <Button onClick={ () => { this.goPatientEdit(recordId) }}>编辑</Button>
           </Space>
         ),
       },
@@ -210,3 +215,5 @@ export default class DataManager extends React.Component {
     );
   }
 }
+
+export default withRouter(DataManager);

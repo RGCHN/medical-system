@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout, Menu, Divider} from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, withRouter} from 'react-router-dom';
 import 'antd/dist/antd.css';
 import './index.scss';
 
@@ -8,22 +8,22 @@ const { Header, Content } = Layout;
 const NAV_ITEM = [
   {
     name: '数据管理',
-    link: '/DataManager'
+    link: '/dataManager'
   },
   {
     name: '模型管理',
-    link: '/ModelManager'
+    link: '/modelManager'
   },
   {
     name: '统计分析',
-    link: '/Analysis'
+    link: '/analysis'
   },
   {
     name: '账号管理',
-    link: '/ProfileManager'
+    link: '/profile'
   }
 ];
-export default class App extends React.Component{
+class App extends React.Component{
   state = {
     current: 0,
   }
@@ -39,10 +39,10 @@ export default class App extends React.Component{
     return (
       <Layout className="layout">
         <Header>
-          <div className="title">
+          <Link className="title" to='/home'>
             浙江大学附属第一医院
-              <div>xxx预测系统</div>
-          </div>
+              <div className='fs-sm'>脑卒中梗死区域预测系统</div>
+          </Link>
           <Menu className="header-nav-container" selectedKeys={[current]}  onClick={this.handleClick}>
             {
               NAV_ITEM.map((item,index) => (
@@ -61,5 +61,7 @@ export default class App extends React.Component{
       </Layout>
     )
   }
-}
+};
+
+export default withRouter(App)
 
