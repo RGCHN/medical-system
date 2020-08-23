@@ -1,0 +1,37 @@
+.info-container{
+  position: relative;
+  .info-edit{
+    .description{
+      .ant-form-item-label{
+        flex:0 0 30%
+      }
+    }
+
+    .result{
+      .ant-form-item-label{
+        flex:0 0 30%
+      }
+    }
+  }
+
+  .info-viewer{
+    .button-container{
+      position: absolute;
+      top:0;
+      right: 1rem;
+    }
+
+    .ant-descriptions-header{
+      margin-bottom: .714rem;
+      margin-left: .5rem;
+    }
+
+    .disease-info-viewer{
+      margin-top: 1rem;
+    }
+
+  }
+
+
+
+}

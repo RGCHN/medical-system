@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'antd';
+import { Card, Row, Col } from 'antd';
 import { UnorderedListOutlined, PieChartOutlined  }  from '@ant-design/icons';
 import { withRouter } from 'react-router-dom';
 import './index.scss';
@@ -66,18 +66,18 @@ class Home extends React.Component{
         <div className='header-img mb-5'>
           <img src={HeaderImg} alt="HeaderImg"/>
         </div>
-        <div className="nav-card-container d-flex jc-between ai-center w-100 flex-wrap">
+        <div className="nav-card-container d-flex jc-between ai-center flex-wrap">
           {
             NAV_CARD.map((item, index) => (
               <Card
                 hoverable
-                className='nav-card text-white mb-3 d-flex flex-column ai-center jc-center'
-                style={{backgroundColor: item.bg, width: '27rem',height: '13rem',borderRadius: '1.4rem'}}
+                className='nav-card text-white mb-3 d-flex flex-column ai-center jc-center mx-3'
+                style={{backgroundColor: item.bg,flex:'1 1 auto', borderRadius: '1.4rem'}}
                 key={index}
                 onClick={ () => this.handleClick(item.link)}
               >
                 <div className='title-container mb-3'>
-                  <span className='ico-container mr-5'>
+                  <span className='ico-container mr-3'>
                   {item.icon}
                 </span>
                   <span className='card-title fs-xxl'>

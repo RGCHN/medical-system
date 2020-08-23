@@ -18,6 +18,9 @@ a{
   color:#999;
 }
 
+.ant-layout-sider{
+  background-color: map-get($colors,'bg');
+}
 
 //定义文字和背景颜色 键值对
 @each $colorKey,$color in $colors{

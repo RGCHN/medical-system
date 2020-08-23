@@ -56,10 +56,6 @@ class DataManager extends React.Component {
   
   handleChange = (pagination, filters, sorter) => {
     console.log('Various parameters', pagination, filters, sorter);
-    this.setState({
-      filteredInfo: filters,
-      sortedInfo: sorter,
-    });
   };
   
   goPatientEdit = recordId => {
@@ -68,59 +64,40 @@ class DataManager extends React.Component {
   
   
   render() {
-    let { sortedInfo, filteredInfo, selectionType } = this.state;
-    sortedInfo = sortedInfo || {};
-    filteredInfo = filteredInfo || {};
+    let { selectionType } = this.state;
     const columns = [
       {
         title: '病例编号',
         dataIndex: 'recordId',
         key: 'recordId',
-        filteredValue: filteredInfo.recordId || null,
-        onFilter: (value, record) => record.recordId.includes(value),
-        sorter: (a,b) => Number(a.recordId)  - Number(b.recordId) ,
-        sortOrder: sortedInfo.columnKey === 'recordId' && sortedInfo.order,
         ellipsis: true,
-        
+        width:100
       },
       {
         title: '负责医师',
         dataIndex: 'doctorName',
         key: 'doctorName',
-        filteredValue: filteredInfo.name || null,
-        onFilter: (value, record) => record.doctorName.includes(value),
-        sorter: (a, b) => a.doctorName.length - b.doctorName.length,
-        sortOrder: sortedInfo.columnKey === 'doctorName' && sortedInfo.order,
         ellipsis: true,
+        width:100
       },
       {
         title: '姓名',
         dataIndex: 'patientName',
         key: 'patientName',
-        filteredValue: filteredInfo.name || null,
-        onFilter: (value, record) => record.patientName.includes(value),
-        sorter: (a, b) => a.patientName.length - b.patientName.length,
-        sortOrder: sortedInfo.columnKey === 'patientName' && sortedInfo.order,
         ellipsis: true,
+        width:100
       },
       {
         title: '性别',
         dataIndex: 'gender',
         key: 'gender',
-        filteredValue: filteredInfo.name || null,
-        onFilter: (value, record) => record.patientName.includes(value),
-        sorter: (a, b) => a.patientName.length - b.patientName.length,
-        sortOrder: sortedInfo.columnKey === 'patientName' && sortedInfo.order,
         ellipsis: true,
+        width:60
       },
       {
         title: '就诊卡号/医保号',
         dataIndex: 'recordId',
         key: 'recordId',
-        filteredValue: filteredInfo.recordId || null,
-        onFilter: (value, record) => record.recordId.includes(value),
-        sorter: (a,b) => Number(a.recordId)  - Number(b.recordId) ,
-        sortOrder: sortedInfo.columnKey === 'recordId' && sortedInfo.order,
         ellipsis: true,
     
       },
@@ -128,25 +105,20 @@ class DataManager extends React.Component {
         title: '年龄',
         dataIndex: 'age',
         key: 'age',
-        sorter: (a, b) => a.age - b.age,
-        sortOrder: sortedInfo.columnKey === 'age' && sortedInfo.order,
         ellipsis: true,
+        width:100
       },
       {
         title: '脑卒中分类',
         dataIndex: 'address',
         key: 'address',
-        filteredValue: filteredInfo.address || null,
         ellipsis: true,
       },
       {
         title: '病人状态',
         dataIndex: 'patientStatus',
         key: 'patientStatus',
-        filteredValue: filteredInfo.patientStatus || null,
-        onFilter: (value, record) => record.address.includes(value),
-        sorter: (a, b) => a.address.length - b.address.length,
-        sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
+        width:100,
         render: patientStatus => {
           let color = 'green';
           if(patientStatus === '死亡'){
@@ -168,10 +140,6 @@ class DataManager extends React.Component {
         title: '最近更新时间',
         dataIndex: 'address',
         key: 'address',
-        filteredValue: filteredInfo.address || null,
-        onFilter: (value, record) => record.address.includes(value),
-        sorter: (a, b) => a.address.length - b.address.length,
-        sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
         ellipsis: true,
       },
       {
@@ -199,7 +167,7 @@ class DataManager extends React.Component {
     };
     
     return (
-      <div className='data-manager-container'>
+      <div className='data-manager-container px-3'>
         <Radio.Group
           onChange={({ target: { value } }) => {
             this.setState({selectionType: value})
@@ -210,7 +178,8 @@ class DataManager extends React.Component {
         <Table rowSelection={{
           type: selectionType,
           ...rowSelection,
-        }} columns={columns} dataSource={data} onChange={this.handleChange} />
+        }} columns={columns} dataSource={data} onChange={this.handleChange}
+        pagination = {{position:['bottomCenter']}}/>
       </div>
     );
   }
