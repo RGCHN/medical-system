@@ -1,6 +1,7 @@
 import React from "react";
-import './index.scss'
 import {Breadcrumb, Button, Input, Radio, Space, Table} from "antd";
+import { withRouter } from 'react-router-dom';
+import './index.scss';
 
 const USER_DATA = [
   {"id": 1, "name": "admin", "role": "管理员"},
@@ -12,32 +13,9 @@ const USER_DATA = [
   {"id": 7, "name": "华盛顿", "role": "医生"},
 ];
 
-const column = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-  },
-  {
-    title: '姓名',
-    dataIndex: 'name',
-  },
-  {
-    title: '权限',
-    dataIndex: 'role'
-  },
-  {
-    title: '操作',
-    key:'action',
-    render: recordId => (
-      <Space size="middle">
-        <Button onClick={ () => { this.goPatientEdit(recordId) }}>编辑</Button>
-        <Button>删除</Button>
-      </Space>
-    ),
-  }
-]
 
-export default class ProfileManager extends React.Component {
+
+class ProfileManager extends React.Component {
   state = {
     userData: USER_DATA,
     filteredInfo: null,
@@ -45,8 +23,21 @@ export default class ProfileManager extends React.Component {
     selectionType: null,
   };
   
+  
+  
   handleSearch = value => {
     const resList = this.state.userData.filter( item => item.name === value);
+    this.setState({
+      userData: resList
+    })
+  }
+  
+  goUserEdit = recordId => {
+    this.props.history.push(`/userEdit/${recordId}`);
+  }
+  
+  handleDelete = recordId => {
+    const resList = this.state.userData.filter( item => item.id !== recordId);
     this.setState({
       userData: resList
     })
@@ -56,6 +47,33 @@ export default class ProfileManager extends React.Component {
   
   render() {
     const { userData, selectionType } = this.state;
+    const column = [
+      {
+        title: 'ID',
+        dataIndex: 'id',
+        key:'id'
+      },
+      {
+        title: '姓名',
+        dataIndex: 'name',
+        key:'name'
+      },
+      {
+        title: '权限',
+        dataIndex: 'role',
+        key:'role'
+      },
+      {
+        title: '操作',
+        key:'action',
+        render: record => (
+          <Space size="middle">
+            <Button onClick={ () => {this.goUserEdit(record.id) }}>编辑</Button>
+            <Button onClick={ () => {this.handleDelete(record.id)}}>删除</Button>
+          </Space>
+        ),
+      }
+    ]
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -70,7 +88,7 @@ export default class ProfileManager extends React.Component {
       <div className="profile-manager-container">
         <Breadcrumb className="m-3">
           <Breadcrumb.Item>账号管理</Breadcrumb.Item>
-          <Breadcrumb.Item>用户权限管理</Breadcrumb.Item>
+          <Breadcrumb.Item>用户列表</Breadcrumb.Item>
         </Breadcrumb>
         <div className="account-table-container ml-5 mt-3">
           <div className="search-bar d-flex ai-center">
@@ -96,4 +114,6 @@ export default class ProfileManager extends React.Component {
       </div>
     )
   }
-}
+};
+
+export default withRouter(ProfileManager)
