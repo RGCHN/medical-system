@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Row, Col } from 'antd';
+import { Card } from 'antd';
 import { UnorderedListOutlined, PieChartOutlined  }  from '@ant-design/icons';
 import { withRouter } from 'react-router-dom';
 import './index.scss';
