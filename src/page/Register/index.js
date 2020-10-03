@@ -1,27 +1,25 @@
 import React, {Component} from 'react';
-import { Card, Form, Button, Input, Checkbox, message } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { Card, Form, Button, Input, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import './index.scss'
 import history from "../../utils/history";
+import './index.scss'
+import {NavLink} from "react-router-dom";
 
-export default class Login extends Component {
+export default class Register extends Component {
   onFinish = values => {
-    this.http.post('/login', values).then(
+    this.http.post('/register',values).then(
       res => {
         if (res.data.status === 'success') {
-          message.success('登录成功！');
-          history.push('/home');
-          localStorage.setItem('access_token', res.data.data.access_token);
-          localStorage.setItem('refresh_token', res.data.data.refresh_token);
+          message.success('注册成功！');
+          history.push('/login')
         }
         if (res.data.status === 'fail'){
-          message.error('用户名或密码错误！');
+          message.error('注册失败！');
         }
       }, err => {
         console.log(err);
       }
-    )
+    );
   };
   
   render() {
@@ -31,18 +29,27 @@ export default class Login extends Component {
           <Form
             name="normal_login"
             className="login-form"
-            initialValues={{
-              remember: true,
-            }}
             onFinish={this.onFinish}
           >
             <Form.Item
-              name="username"
-              label="账号"
+              name="realname"
+              label="姓名"
               rules={[
                 {
                   required: true,
-                  message: '请输入账号!',
+                  message: '请输入姓名!',
+                },
+              ]}
+            >
+              <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Realname" />
+            </Form.Item>
+            <Form.Item
+              name="username"
+              label="帐号"
+              rules={[
+                {
+                  required: true,
+                  message: '请输入帐号!',
                 },
               ]}
             >
@@ -64,14 +71,12 @@ export default class Login extends Component {
                 placeholder="Password"
               />
             </Form.Item>
-            <Form.Item className="operator-bar d-flex jc-between">
-              <Checkbox>记住我</Checkbox>
-              <NavLink to='register'>没有帐号？去注册</NavLink>
+            <Form.Item>
+              <NavLink to='login'>已有帐号？去登录</NavLink>
             </Form.Item>
-    
             <Form.Item>
               <Button type="primary" htmlType="submit" className="login-form-button w-100">
-                登录
+                注册
               </Button>
             </Form.Item>
           </Form>

@@ -5,4 +5,10 @@
   .age-distribute-container{
     width: 80%;
   }
+  .state-distribute{
+    width: 80%;
+    .antd-pro-charts-pie-legend{
+      min-width: 300px;
+    }
+  }
 }

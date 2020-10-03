@@ -1,6 +1,6 @@
 import React from "react";
-import { Collapse } from 'antd';
-import {EditFilled, CloseOutlined} from '@ant-design/icons'
+import {Button, Collapse} from 'antd';
+import { EditFilled, CloseOutlined } from '@ant-design/icons'
 import ImgUpload from "../ImgUpload";
 import './index.scss'
 
@@ -28,6 +28,9 @@ export default class IntelligentView extends React.Component{
   render(){
     return(
       <div className="intelligent-container mx-3">
+        <Button type="primary" className="mb-3">
+          添加诊疗记录
+        </Button>
         <Collapse defaultActiveKey={['0']}>
           {
             DEFAULT_DATA.map((date,index) => (

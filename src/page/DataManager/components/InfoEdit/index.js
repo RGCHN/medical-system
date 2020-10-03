@@ -1,107 +1,143 @@
 import React from "react";
-import {Divider, Button, Form, Input, DatePicker, Radio, Select,Row, Col,Descriptions, Badge } from "antd";
+import {Divider, Button, Form, Input, DatePicker, Radio, Select,Row, Col,Descriptions, message } from "antd";
+import moment from 'moment';
+import history from "../../../../utils/history";
 import './index.scss';
 
 const { TextArea } = Input;
 
 const MOCK_PATIENT = {
-  patientID:'病例编号',
-  age: "age",
-  cva: "脑卒中分类",
-  info: "病症描述",
-  name: "name",
-  recordID: "医保卡号",
-  result: "诊疗结果",
-  sex: 0,//"0为男 1为女",
-  state: "病人状态",
-  createTime:"2020-08-12",
-  firstAge:'25'
+  id:'1',
+  age: "32",
+  cva: "出血性脑梗塞",
+  info: "头昏、头晕、步态不稳、肢体无力，少数有饮水呛咳，吞咽困难、偏身感觉减退",
+  name: "李兵",
+  recordID: "1111",
+  result: "作为卒中紧急治疗，可在DSA直视下进行超选择介入动脉溶栓,尿激酶动脉溶栓合用小剂量肝素静脉滴注",
+  sex: "0",//"0为男 1为女",
+  state: "1",
+  createTime:new Date("2020-09-11").getTime(),
+  firstAge:'32',
 }
-
-
 class InfoEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      mode:'view', //view或者edit
+      mode:'edit', //view或者edit
       patient:MOCK_PATIENT
     }
   }
- 
+  
+  static contextType = idContext;
+  
   changeMode = mode => {
     this.setState({
       mode:mode
     })
   }
   
-  render() {
-    const { mode,patient } = this.state;
-    const rightNode = (
-      <div>
-        <Button type="primary" >编辑</Button>
-      </div>
+  handleFinishFailed = err => {
+    console.log('Failed:', err);
+  }
+  
+  handleFinish = patientInfo => {
+    patientInfo.createTime = new Date( patientInfo.createTime).getTime();
+    console.log( patientInfo );
+    this.http.post('/addPatient',  patientInfo).then(
+      res => {
+        if (res.data.status === 'success') {
+          message.success('保存成功！')
+          this.setState({
+            mode: 'view',
+            patient: res.data.data.patient,
+          })
+          //this.props.refreshID(res.data.patient.id)
+        }
+        if (res.data.status === 'fail') {
+          message.error('保存失败！请稍后重试');
+          console.log(res.data.msg);
+          this.setState({
+            mode: 'edit',
+          })
+        }
+        
+      }
     )
+  }
+  
+  componentDidMount() {
+    this.setState({
+      mode: this.props.type
+    })
+  }
+  
+  render() {
+    const { mode, patient } = this.state;
+    console.log(patient);
     return (
       <div className="info-container w-100 px-3">
         {
           mode === 'edit' && (
-            <Form labelCol={{ span: 12}} wrapperCol={{span: 12}} name="control-ref" className='info-edit w-100 px-5'>
+            <Form
+              labelCol={{ span: 12}}
+              wrapperCol={{span: 12}}
+              name="control-ref"
+              className='info-edit w-100 px-5'
+              initialValues={{ remember: true }}
+              onFinish={this.handleFinish}
+              onFinishFailed={this.handleFinishFailed}
+            >
               <Divider orientation="left">个人信息</Divider>
               <Row gutter={24}>
-                <Col span={8} key='recordID'>
-                  <Form.Item label="病例编号">
-                    <Input placeholder='输入病例编号'/>
-                  </Form.Item>
-                </Col>
                 <Col span={8} key='name'>
-                  <Form.Item label="姓名">
-                    <Input placeholder='输入姓名'/>
+                  <Form.Item label="姓名" name="name" initialValue={patient.name || ''}>
+                    <Input />
                   </Form.Item>
                 </Col>
-                <Col span={8} key='gender'>
-                  <Form.Item label="性别"  >
-                    <Radio.Group>
+                <Col span={8} key='sex'>
+                  <Form.Item label="性别" name="sex" initialValue={patient.sex || '0'}>
+                    <Radio.Group >
                       <Radio value="0">男</Radio>
                       <Radio value="1">女</Radio>
                     </Radio.Group>
                   </Form.Item>
                 </Col>
-  
                 <Col span={8} key='age'>
-                  <Form.Item label="年龄（岁）">
-                    <Input placeholder='年龄'/>
+                  <Form.Item label="年龄（岁）" name="age" initialValue={patient.age || ''}>
+                    <Input />
                   </Form.Item>
                 </Col>
-                <Col span={8} key='cardID'>
-                  <Form.Item label="就诊卡号/医保号">
-                    <Input placeholder='就诊卡号/医保号'/>
+                <Col span={8} key='recordID'>
+                  <Form.Item label="就诊卡号/医保号" name="recordID" initialValue={ patient.patientID || ''}>
+                    <Input />
                   </Form.Item>
                 </Col>
-                <Col span={8} key='status'>
-                  <Form.Item label="病人状态">
+                <Col span={8} key='state'>
+                  <Form.Item label="病人状态" name="state" initialValue={patient.state || "1"}>
                     <Select>
-                      <Select.Option value="in">在访</Select.Option>
-                      <Select.Option value="die">死亡</Select.Option>
-                      <Select.Option value="health">康复</Select.Option>
+                      <Select.Option value="1">超急性期(0-6小时)</Select.Option>
+                      <Select.Option value="2">急性期(6-24小时)</Select.Option>
+                      <Select.Option value="3">亚急性期(24小时-2周)</Select.Option>
+                      <Select.Option value="4">慢性期(大于2周)</Select.Option>
                     </Select>
                   </Form.Item>
                 </Col>
                 
                 <Col span={8} key='firstAge'>
-                  <Form.Item label="初次就诊年龄(岁)">
-                    <Input placeholder='输入年龄'/>
+                  <Form.Item label="初次就诊年龄(岁)" name="firstAge" initialValue={patient.firstAge || ''}>
+                    <Input />
                   </Form.Item>
                 </Col>
                 <Col span={8} key='firstTime'>
-                  <Form.Item label='初次就诊时间'>
-                    <DatePicker />
+                  <Form.Item label='初次就诊时间' name="createTime" initialValue={moment()}>
+                    <DatePicker  />
                   </Form.Item>
                 </Col>
-                <Col span={8} key='class'>
-                  <Form.Item label="脑卒中分类">
-                    <Select>
-                      <Select.Option value="in">血栓性脑梗塞</Select.Option>
-                      <Select.Option value="die">拴柱性脑梗塞</Select.Option>
+                <Col span={8} key='cva'>
+                  <Form.Item label="脑卒中分类" name="cva" initialValue={patient.cva || 'in'}>
+                    <Select >
+                      <Select.Option value="in">缺血性脑梗塞</Select.Option>
+                      <Select.Option value="die">出血性脑梗塞</Select.Option>
                     </Select>
                   </Form.Item>
                 </Col>
@@ -109,19 +145,19 @@ class InfoEdit extends React.Component {
               </Row>
               <Divider orientation="left">疾病信息</Divider>
               <Row gutter={24}>
-                <Col span={12} wrapperCol={{span: 16}} key='description' >
-                  <Form.Item label="症状描述" className='description'>
-                    <TextArea rows={4}/>
+                <Col span={12} wrappercol={{span: 16}} key='description' >
+                  <Form.Item label="症状描述" className='description' name="info" initialValue={patient.info || ''}>
+                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
-                <Col span={12} wrapperCol={{span: 24}} key='result' >
-                  <Form.Item label="诊疗结果" className='result'>
-                    <TextArea rows={4}/>
+                <Col span={12} wrappercol={{span: 24}} key='result' >
+                  <Form.Item label="诊疗结果" className='result' name="result" initialValue={patient.result || ''}>
+                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
               </Row>
               <Form.Item>
-                <Button type="primary" htmlType="submit" onClick={() => this.changeMode('view')}>
+                <Button type="primary" htmlType="submit">
                   保存
                 </Button>
               </Form.Item>
@@ -136,9 +172,9 @@ class InfoEdit extends React.Component {
                 <Button type="primary" className='back-button ml-3'>返回</Button>
               </div>
               <Descriptions bordered title="个人信息" column={3} className='basic-info-viewer'>
-                <Descriptions.Item label="病例编号">{patient.patientID}</Descriptions.Item>
+                <Descriptions.Item label="病例编号">{patient.id}</Descriptions.Item>
                 <Descriptions.Item label="姓名">{patient.name}</Descriptions.Item>
-                <Descriptions.Item label="性别">{patient.sex===0? '男': '女'}</Descriptions.Item>
+                <Descriptions.Item label="性别">{patient.sex==='0'? '男': '女'}</Descriptions.Item>
                 <Descriptions.Item label="年龄（岁）">{patient.age}</Descriptions.Item>
                 <Descriptions.Item label="病人状态">{patient.state}</Descriptions.Item>
                 <Descriptions.Item label="初次就诊时间">{patient.createTime}</Descriptions.Item>
