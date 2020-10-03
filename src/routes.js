@@ -18,6 +18,11 @@ const routes = [
     component: Home
   },
   {
+    path:'/home/:userName',
+    exact: true,
+    component: Home
+  },
+  {
     path:'/patientList/:mode',
     exact: true,
     component: DataManager

@@ -1,6 +1,9 @@
 .user-edit-container {
+    display: flex;
+    justify-content: center;
     .user-info-container {
         position: relative;
+        width: 86%;
         .button-container {
             position: absolute;
             top: 0;

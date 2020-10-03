@@ -1,74 +1,50 @@
 import React from "react";
-import { Divider } from 'antd';
+import {Divider, message} from 'antd';
 import { Pie, Bar } from 'ant-design-pro/lib/Charts';
 import './index.scss';
 
-const genderData = [
-  {
-    x: '男',
-    y: 4544,
-  },
-  {
-    x: '女',
-    y: 3321,
-  }
-];
-const ageData = [
-  {
-    x: '<20岁',
-    y: Math.floor(Math.random() * 100)
-  },
-  {
-    x: '20-29岁',
-    y: Math.floor(Math.random() * 200)
-  },
-  {
-    x: '30-39岁',
-    y: Math.floor(Math.random() * 200) + 200
-  },
-  {
-    x: '40-49岁',
-    y: Math.floor(Math.random() * 500)
-  },
-  {
-    x: '50-59岁',
-    y: Math.floor(Math.random() * 500) + 200
-  },{
-    x: '60-69岁',
-    y: Math.floor(Math.random() * 1000) + 200
-  },
-  {
-    x: '70-79岁',
-    y: Math.floor(Math.random() * 1000) + 200
-  },
-  {
-    x: '≥80岁',
-    y: Math.floor(Math.random() * 500) + 200
-  },
-];
-const distributeData = [
-  {
-    x: '超急性期(0-6小时)',
-    y: 4544,
-  },
-  {
-    x: '急性期(6-24小时)',
-    y: 3321,
-  },
-  {
-    x: '亚急性期(24小时-2周)',
-    y: 3113,
-  },
-  {
-    x: '慢性期(大于2周)',
-    y: 1231,
-  },
-]
 
 export default class Analysis extends React.Component {
-  state = {};
+  state = {
+    genderData:[],
+    ageData:[],
+    distributeData:[],
+  };
+  
+  componentDidMount() {
+    this.http.get('/patientsAnalyze').then(res => {
+      console.log(res);
+      const genderData = Object.entries(res.data.data.sex_number).map(item => {
+        return {
+          x: item[0] === 'manNumber' ? '男' : '女',
+          y: Number(item[1])
+        }
+      });
+      const ageData = Object.entries(res.data.data.age).map(item => {
+        return {
+          x: `${item[0]}岁`,
+          y: item[1]
+        }
+      });
+      const distributeData = Object.entries(res.data.data.phase).map(item => {
+        return {
+          x: item[0],
+          y: item[1]
+        }
+      });
+      this.setState({
+        genderData,
+        ageData,
+        distributeData
+      })
+      
+    }, err => {
+      message.error('网络错误，请稍候重试！')
+    })
+  }
   
   render() {
+    const { genderData, ageData, distributeData} = this.state;
     return (
       <div className="analysis-container d-flex flex-column ai-center">
         <div className='gender-pie'>

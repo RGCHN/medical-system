@@ -49,14 +49,14 @@ class App extends React.Component{
     const menu = (
       <Menu>
         <Menu.Item key="center">
-          <a rel="noopener noreferrer" href="#">
+          <NavLink to='/profile'>
             用户中心
-          </a>
+          </NavLink>
         </Menu.Item>
         <Menu.Item key="exit">
-          <a rel="noopener noreferrer" href="#">
+          <NavLink to='/login'>
             退出
-          </a>
+          </NavLink>
         </Menu.Item>
       </Menu>
     )
@@ -76,7 +76,7 @@ class App extends React.Component{
                     </NavLink>
                   </Sider>
                   <Content>
-                    <Menu className="header-nav-container" selectedKeys={[current]}  onClick={this.handleClick}>
+                    <Menu className="header-nav-container"  style={{border:'none'}} selectedKeys={[current]}  onClick={this.handleClick}>
                       {
                         NAV_ITEM.map((item,index) => (
                           <Menu.Item key={index} className="header-nav-item">

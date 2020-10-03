@@ -9,7 +9,7 @@ http.interceptors.request.use(config=>{
     config.headers.authorization = localStorage.access_token;
   }
   console.log('请求查看');
-  console.log(config);
+  console.log(JSON.stringify(config));
   return config;
 },err=>{
   return Promise.reject(err);
@@ -18,7 +18,7 @@ http.interceptors.request.use(config=>{
 //响应拦截器 捕获错误
 http.interceptors.response.use(res => {
   console.log('响应查看')
-  console.log(res);
+  console.log(JSON.stringify(res));
   return res
 }, err => {
   console.log('错误查看')

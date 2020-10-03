@@ -78,7 +78,7 @@ class DataManager extends React.Component {
       this.setState({
         patientData: res.data.data.patientList
       })
-    }).catch(err => {
+    }, err => {
       this.setState({
         patientData: DEFAULT_DATA
       })
@@ -262,7 +262,7 @@ class DataManager extends React.Component {
         <div className="header d-flex jc-between">
           <div className="search-bar d-flex ai-center jc-between">
             <div className="title">病人总览
-              <span style={{fontWeight:"bold", color:'#52c51a'}}> { patientData.length } </span>人
+              <span style={{fontWeight:"bold", color:'#52c51a'}}> { patientData.length || 0} </span>人
             </div>
             <Input.Search className="search-input ml-3" placeholder="输入姓名查找" onSearch={this.handleSearch} />
           </div>

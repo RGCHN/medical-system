@@ -24,11 +24,9 @@ class InfoEdit extends React.Component {
     super(props);
     this.state = {
       mode:'edit', //view或者edit
-      patient:MOCK_PATIENT
+      patient:{}
     }
   }
-  
-  static contextType = idContext;
   
   changeMode = mode => {
     this.setState({
@@ -42,7 +40,6 @@ class InfoEdit extends React.Component {
   
   handleFinish = patientInfo => {
     patientInfo.createTime = new Date( patientInfo.createTime).getTime();
-    console.log( patientInfo );
     this.http.post('/addPatient',  patientInfo).then(
       res => {
         if (res.data.status === 'success') {
@@ -51,11 +48,11 @@ class InfoEdit extends React.Component {
             mode: 'view',
             patient: res.data.data.patient,
           })
-          //this.props.refreshID(res.data.patient.id)
+          const newID = res.data.data.patient.id;
+          this.props.refreshID(newID);
         }
         if (res.data.status === 'fail') {
           message.error('保存失败！请稍后重试');
-          console.log(res.data.msg);
           this.setState({
             mode: 'edit',
           })
@@ -67,7 +64,7 @@ class InfoEdit extends React.Component {
   
   componentDidMount() {
     this.setState({
-      mode: this.props.type
+      mode: this.props.type || 'edit'
     })
   }
   

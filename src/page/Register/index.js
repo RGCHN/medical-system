@@ -17,7 +17,7 @@ export default class Register extends Component {
           message.error('注册失败！');
         }
       }, err => {
-        console.log(err);
+        message.error('网络错误，请稍后再试！');
       }
     );
   };

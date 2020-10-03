@@ -11,14 +11,16 @@ export default class Login extends Component {
       res => {
         if (res.data.status === 'success') {
           message.success('登录成功！');
-          history.push('/home');
+          history.push(`/home`);
           localStorage.setItem('access_token', res.data.data.access_token);
           localStorage.setItem('refresh_token', res.data.data.refresh_token);
         }
         if (res.data.status === 'fail'){
           message.error('用户名或密码错误！');
         }
+       
       }, err => {
+        message.error('网络错误，请稍后再试！')
         console.log(err);
       }
     )

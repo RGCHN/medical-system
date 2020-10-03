@@ -1,5 +1,6 @@
 import React from "react";
 import {Breadcrumb, Button, Input, Radio, Space, Table} from "antd";
+import history from '../../utils/history';
 import { withRouter } from 'react-router-dom';
 import './index.scss';
 
@@ -17,13 +18,11 @@ const USER_DATA = [
 
 class ProfileManager extends React.Component {
   state = {
-    userData: USER_DATA,
+    userData: [],
     filteredInfo: null,
     sortedInfo: null,
     selectionType: null,
   };
-  
-  
   
   handleSearch = value => {
     const resList = this.state.userData.filter( item => item.name === value);
@@ -32,8 +31,8 @@ class ProfileManager extends React.Component {
     })
   }
   
-  goUserEdit = recordId => {
-    this.props.history.push(`/userEdit/${recordId}`);
+  goUserEdit = userID => {
+    history.push(`/userEdit/${userID}`);
   }
   
   handleDelete = recordId => {
@@ -43,6 +42,17 @@ class ProfileManager extends React.Component {
     })
   }
   
+  componentDidMount() {
+    this.http.get('/userInfo').then(
+      res => {
+        this.setState({
+          userData: res.data.data.userInfo,
+        })
+      }, err => {
+        console.log(err);
+      }
+    )
+  }
   
   
   render() {

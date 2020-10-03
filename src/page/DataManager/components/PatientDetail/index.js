@@ -39,7 +39,11 @@ class PatientDetail extends React.Component {
     })
   }
   refreshID = newID => {
-    history.push(`/patientInfo/${newID}/view`);
+    this.setState({
+      patientID: newID,
+      disabled: false,
+    })
+    history.push(`/patientInfo/basic/${newID}/view`);
   }
   
   componentDidMount() {
@@ -109,7 +113,6 @@ class PatientDetail extends React.Component {
         
                 )
               }
-    
             </Content>
           </Layout>
         </idContext.Provider>
