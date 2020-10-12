@@ -1,11 +1,11 @@
 import React from "react";
 import {Divider, Button, Form, Input, DatePicker, Radio, Select,Row, Col,Descriptions, message } from "antd";
 import moment from 'moment';
-import history from "../../../../utils/history";
+import idContext from '../idContext';
 import './index.scss';
 
 const { TextArea } = Input;
-
+/*
 const MOCK_PATIENT = {
   id:'1',
   age: "32",
@@ -18,7 +18,7 @@ const MOCK_PATIENT = {
   state: "1",
   createTime:new Date("2020-09-11").getTime(),
   firstAge:'32',
-}
+}*/
 class InfoEdit extends React.Component {
   constructor(props) {
     super(props);
@@ -35,7 +35,7 @@ class InfoEdit extends React.Component {
   }
   
   handleFinishFailed = err => {
-    console.log('Failed:', err);
+    message.error('保存失败！请稍后重试');
   }
   
   handleFinish = patientInfo => {
@@ -68,9 +68,21 @@ class InfoEdit extends React.Component {
     })
   }
   
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    //todo 写完加载后请求病人数据
+    let id = this.context;
+    const { patient } = this.state;
+    /*if (Object.keys(patient).length === 0) {
+      this.http.post('/getPatientByID', id).then(res => {
+        console.log(res);
+      })
+    }*/
+  }
+  
   render() {
+    console.log('context')
+    console.log(this.context);
     const { mode, patient } = this.state;
-    console.log(patient);
     return (
       <div className="info-container w-100 px-3">
         {
@@ -119,7 +131,7 @@ class InfoEdit extends React.Component {
                     </Select>
                   </Form.Item>
                 </Col>
-                
+            
                 <Col span={8} key='firstAge'>
                   <Form.Item label="初次就诊年龄(岁)" name="firstAge" initialValue={patient.firstAge || ''}>
                     <Input />
@@ -138,7 +150,7 @@ class InfoEdit extends React.Component {
                     </Select>
                   </Form.Item>
                 </Col>
-              
+          
               </Row>
               <Divider orientation="left">疾病信息</Divider>
               <Row gutter={24}>
@@ -189,8 +201,9 @@ class InfoEdit extends React.Component {
             </div>
           )
         }
-         </div>
+      </div>
     )
   }
 }
+InfoEdit.contextType = idContext;
 export default InfoEdit

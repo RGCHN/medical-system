@@ -1,10 +1,12 @@
 import React from "react";
-import {Button, Collapse} from 'antd';
+import {Button, Collapse, message} from 'antd';
 import { EditFilled, CloseOutlined } from '@ant-design/icons'
 import ImgUpload from "../ImgUpload";
+import idContext from '../idContext';
 import './index.scss'
 
 const { Panel } = Collapse;
+
 
 const DEFAULT_DATA = [
   "2020-01-28",
@@ -16,7 +18,7 @@ const DEFAULT_DATA = [
 ]
 
 export default class IntelligentView extends React.Component{
-  state = {};
+  
   genExtra = () => (
       <>
         <EditFilled className='mx-3'/>
@@ -24,6 +26,21 @@ export default class IntelligentView extends React.Component{
       </>
     )
   
+  componentDidMount() {
+    const id = this.context;
+    console.log(`id ${id}`);
+    this.modelHttp.post('/getResultsByPatient', { "patientID": id}).then(res => {
+        console.log(res);
+      }, err => {
+        message.error('网络错误，请稍候重试！')
+      }
+    )
+    /*this.modelHttp.get('/getResultsByPatient', id).then(
+      res=>{
+        console.log(res);
+      }
+    )*/
+  }
   
   render(){
     return(
@@ -38,10 +55,11 @@ export default class IntelligentView extends React.Component{
                 <ImgUpload />
               </Panel>
             ))
-          
+        
           }
         </Collapse>,
       </div>
     )
   }
 }
+IntelligentView.contextType = idContext;

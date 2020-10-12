@@ -86,7 +86,7 @@ class DataManager extends React.Component {
   }
   
   render() {
-    let { selectionType, patientData, mode } = this.state;
+    let { selectionType, patientData = [], mode } = this.state;
     const listColumns = [
       {
         title: '病例编号',

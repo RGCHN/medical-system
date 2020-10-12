@@ -9,3 +9,7 @@ export const userTypeMap = {
   "2": "主任医生",
   "3": "医生",
 }
+
+export const clearToken = () => {
+  localStorage.removeItem('access_token');
+}

@@ -6,6 +6,7 @@ import InfoEdit from "../InfoEdit";
 import IntelligentView from "../IntelligentView";
 import DiseaseTrend from "../DiseaseTrend";
 import history from "../../../../utils/history";
+import idContext from '../idContext';
 import './index.scss'
 
 const { Sider, Content } = Layout;
@@ -19,7 +20,6 @@ const MOCK_PATIENT = {
     result: '出血性脑梗塞',
 }
 
-const idContext = React.createContext('1');
 class PatientDetail extends React.Component {
   
   constructor(props){

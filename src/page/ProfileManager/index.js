@@ -4,18 +4,6 @@ import history from '../../utils/history';
 import { withRouter } from 'react-router-dom';
 import './index.scss';
 
-const USER_DATA = [
-  {"id": 1, "name": "admin", "role": "管理员"},
-  {"id": 2, "name": "zj", "role": "管理员"},
-  {"id": 3, "name": "赵晗", "role": "管理员"},
-  {"id": 4, "name": "xiaozj", "role": "医生"},
-  {"id": 5, "name": "陈榕", "role": "管理员"},
-  {"id": 6, "name": "吴锦毅", "role": "管理员"},
-  {"id": 7, "name": "华盛顿", "role": "医生"},
-];
-
-
-
 class ProfileManager extends React.Component {
   state = {
     userData: [],

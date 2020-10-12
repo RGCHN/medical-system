@@ -26,7 +26,6 @@ export default class UserEdit extends Component {
   
   render() {
     const {mode, userData} = this.state;
-    console.log(userData);
     return (
       <div className="user-edit-container mx-3">
         <Breadcrumb>
@@ -47,7 +46,7 @@ export default class UserEdit extends Component {
                   <Row gutter={24}>
                     <Col span={12} key='username'>
                       <Form.Item label="用户名" initialValue={userData.username}>
-                        <Input placeholder={userData.username}/>
+                        <Input placeholder='输入用户名'/>
                       </Form.Item>
                     </Col>
                     <Col span={12} key='phone'>
