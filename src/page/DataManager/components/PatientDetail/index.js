@@ -27,7 +27,7 @@ class PatientDetail extends React.Component {
     this.state = {
       patientID: '',
       patient: MOCK_PATIENT,
-      sideKey:'basic',
+      sideKey:'intelligent',
       disabled: false,
       basicType:'edit'
     }
@@ -66,8 +66,8 @@ class PatientDetail extends React.Component {
             <Sider className="site-layout-background" style={{height:'100vh', overflow: 'auto'}}>
               <Menu
                 mode="inline"
-                defaultSelectedKeys={['basic']}
-                defaultOpenKeys={['basic']}
+                defaultSelectedKeys={['intelligent']}
+                defaultOpenKeys={['intelligent']}
                 style={{ height: '100%', borderRight: 0 }}
                 onClick={({key}) => this.handleMenuClick(key)}
               >
@@ -77,6 +77,9 @@ class PatientDetail extends React.Component {
               </Menu>
             </Sider>
             <Content>
+              {
+              
+              }
               {
                 sideKey === 'basic' && (
                   <>
@@ -110,7 +113,6 @@ class PatientDetail extends React.Component {
                     </Breadcrumb>
                     <DiseaseTrend />
                   </>
-        
                 )
               }
             </Content>

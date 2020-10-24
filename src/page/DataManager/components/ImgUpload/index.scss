@@ -1,17 +1,13 @@
 .img-upload-container{
   .img-upload-side{
     height: 100%;
-    width: 15%;
+    width: 100%;
+    padding: 15px;
     border: 1px dashed #999;
-     .ant-upload {
-      width: 10.714rem;
-      height: 9.286rem;
-    }
   }
 
   .img-upload-content{
     .result-container{
-      height: 80%;
       .title{
         border-bottom: 1px map-get($colors,"gray") dashed;
       }
@@ -19,9 +15,8 @@
         border: 1px map-get($colors,"gray") dashed;
         height: 80%;
       }
-
-      .result{
-        height: 60%;
+      .result-img{
+        min-height: 100px;
       }
     }
   }
