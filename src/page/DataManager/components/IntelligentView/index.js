@@ -8,13 +8,9 @@ import './index.scss'
 const { Panel } = Collapse;
 
 
-const DEFAULT_DATA = [
-  "2020-01-28",
-]
-
 export default class IntelligentView extends React.Component{
   state = {
-    recordList: DEFAULT_DATA,
+    recordList: [],
     visible: false,
     confirmLoading: false,
     defaultKey:0,
@@ -34,7 +30,7 @@ export default class IntelligentView extends React.Component{
     });
     if (this.tempDate !== '') {
       this.setState({
-        recordList: this.state.recordList.concat(this.tempDate),
+        recordList: this.state.recordList.concat({time: this.tempDate}),
         defaultKey: this.state.recordList.length
       })
     } else {
@@ -46,7 +42,7 @@ export default class IntelligentView extends React.Component{
         confirmLoading: false,
       });
       message.success("添加诊疗记录成功！")
-    }, 1000);
+    }, 800);
   };
   
   
@@ -74,7 +70,9 @@ export default class IntelligentView extends React.Component{
     const id = this.context;
     this.modelHttp.post('/getResultsByPatient',{patientID:id}).then(
       res => {
-        console.log(res);
+        this.setState({
+          recordList: res.data.data.results
+        })
       }, err => {
         message.error('网络错误！请稍后重试！')
       }
@@ -82,7 +80,7 @@ export default class IntelligentView extends React.Component{
   }
   
   render(){
-    const { visible, confirmLoading, recordList, defaultKey} = this.state;
+    const { visible, confirmLoading, recordList = [], defaultKey} = this.state;
   
     return(
       <div className="intelligent-container mx-3">
@@ -100,9 +98,9 @@ export default class IntelligentView extends React.Component{
         </Modal>
         <Collapse defaultActiveKey={[defaultKey]}>
           {
-            recordList.map((date,index) => (
-              <Panel key={index} header={date} extra={this.genExtra(index)}>
-                <ImgUpload />
+            recordList.length !== 0 && recordList.map((record,index) => (
+              <Panel key={index} header={record.time.slice(0, 11)} extra={this.genExtra(index)}>
+                <ImgUpload data={record}/>
               </Panel>
             ))
           }

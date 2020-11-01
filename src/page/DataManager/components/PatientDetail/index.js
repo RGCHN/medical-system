@@ -27,7 +27,7 @@ class PatientDetail extends React.Component {
     this.state = {
       patientID: '',
       patient: MOCK_PATIENT,
-      sideKey:'intelligent',
+      sideKey:'basic',
       disabled: false,
       basicType:'edit'
     }
@@ -66,8 +66,8 @@ class PatientDetail extends React.Component {
             <Sider className="site-layout-background" style={{height:'100vh', overflow: 'auto'}}>
               <Menu
                 mode="inline"
-                defaultSelectedKeys={['intelligent']}
-                defaultOpenKeys={['intelligent']}
+                defaultSelectedKeys={['basic']}
+                defaultOpenKeys={['basic']}
                 style={{ height: '100%', borderRight: 0 }}
                 onClick={({key}) => this.handleMenuClick(key)}
               >

@@ -1,10 +1,23 @@
 .img-upload-container{
+  .spin-container{
+    text-align: center;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    padding: 30px 50px;
+  }
+
   .img-upload-side{
     height: 100%;
     width: 100%;
     padding: 15px;
     border: 1px dashed #999;
   }
+
+  .img-index{
+    width: 160px;
+    text-align: center;
+  }
+
 
   .img-upload-content{
     .result-container{
