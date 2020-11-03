@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Collapse, message, Modal, DatePicker} from 'antd';
+import {Button, Collapse, message, Modal, DatePicker, Spin} from 'antd';
 import { EditFilled, CloseOutlined } from '@ant-design/icons'
 import ImgUpload from "../ImgUpload";
 import idContext from '../idContext';
@@ -14,6 +14,7 @@ export default class IntelligentView extends React.Component{
     visible: false,
     confirmLoading: false,
     defaultKey:0,
+    spinVisible: true,
   }
   
   tempDate = '';
@@ -71,7 +72,8 @@ export default class IntelligentView extends React.Component{
     this.modelHttp.post('/getResultsByPatient',{patientID:id}).then(
       res => {
         this.setState({
-          recordList: res.data.data.results
+          recordList: res.data.data.results,
+          spinVisible: false,
         })
       }, err => {
         message.error('网络错误！请稍后重试！')
@@ -80,33 +82,41 @@ export default class IntelligentView extends React.Component{
   }
   
   render(){
-    const { visible, confirmLoading, recordList = [], defaultKey} = this.state;
+    const { visible, confirmLoading, recordList = [], defaultKey, spinVisible} = this.state;
   
-    return(
-      <div className="intelligent-container mx-3">
-        <Button type="primary" className="mb-3" onClick={this.showModal}>
-          添加诊疗记录
-        </Button>
-        <Modal
-          title="添加诊疗记录"
-          visible={visible}
-          onOk={this.handleOk}
-          confirmLoading={confirmLoading}
-          onCancel={this.handleCancel}
-        >
-          请选择就诊日期：<DatePicker onChange={this.onChange} />
-        </Modal>
-        <Collapse defaultActiveKey={[defaultKey]}>
-          {
-            recordList.length !== 0 && recordList.map((record,index) => (
-              <Panel key={index} header={record.time.slice(0, 11)} extra={this.genExtra(index)}>
-                <ImgUpload data={record}/>
-              </Panel>
-            ))
-          }
-        </Collapse>
-      </div>
-    )
+    if (spinVisible) {
+      return (
+        <div className="spin-container">
+          <Spin size="large"/>
+        </div>
+      )
+    } else {
+      return(
+        <div className="intelligent-container mx-3">
+          <Button type="primary" className="mb-3" onClick={this.showModal}>
+            添加诊疗记录
+          </Button>
+          <Modal
+            title="添加诊疗记录"
+            visible={visible}
+            onOk={this.handleOk}
+            confirmLoading={confirmLoading}
+            onCancel={this.handleCancel}
+          >
+            请选择就诊日期：<DatePicker onChange={this.onChange} />
+          </Modal>
+          <Collapse defaultActiveKey={[defaultKey]}>
+            {
+              recordList.length !== 0 && recordList.map((record,index) => (
+                <Panel key={index} header={record.time.slice(0, 11)} extra={this.genExtra(index)}>
+                  <ImgUpload data={record}/>
+                </Panel>
+              ))
+            }
+          </Collapse>
+        </div>
+      )
+    }
   }
 }
 IntelligentView.contextType = idContext;

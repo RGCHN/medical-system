@@ -13,31 +13,33 @@ export default class Analysis extends React.Component {
   
   componentDidMount() {
     this.http.get('/patientsAnalyze').then(res => {
-      console.log(res);
-      const genderData = Object.entries(res.data.data.sex_number).map(item => {
-        return {
-          x: item[0] === 'manNumber' ? '男' : '女',
-          y: Number(item[1])
-        }
-      });
-      const ageData = Object.entries(res.data.data.age).map(item => {
-        return {
-          x: `${item[0]}岁`,
-          y: item[1]
-        }
-      });
-      const distributeData = Object.entries(res.data.data.phase).map(item => {
-        return {
-          x: item[0],
-          y: item[1]
-        }
-      });
-      this.setState({
-        genderData,
-        ageData,
-        distributeData
-      })
-      
+      if (res.status === 'fail') {
+        message.error('网络错误！请稍后重试！')
+      } else {
+        const genderData = Object.entries(res.data.data.sex_number).map(item => {
+          return {
+            x: item[0] === 'manNumber' ? '男' : '女',
+            y: Number(item[1])
+          }
+        });
+        const ageData = Object.entries(res.data.data.age).map(item => {
+          return {
+            x: `${item[0]}岁`,
+            y: item[1]
+          }
+        });
+        const distributeData = Object.entries(res.data.data.phase).map(item => {
+          return {
+            x: item[0],
+            y: item[1]
+          }
+        });
+        this.setState({
+          genderData,
+          ageData,
+          distributeData
+        })
+      }
     }, err => {
       message.error('网络错误，请稍候重试！')
     })

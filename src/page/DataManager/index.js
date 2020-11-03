@@ -1,6 +1,6 @@
 import React from "react";
 import { withRouter, NavLink} from 'react-router-dom';
-import {Table, Space, Radio, Tag, Button, Input} from 'antd';
+import {Table, Space, Radio, Tag, Button, Input, Spin} from 'antd';
 import './index.scss'
 import { stateMap } from "../../utils/tools";
 
@@ -55,7 +55,165 @@ const DEFAULT_DATA = [
     updateTime: '2019-12-27',
   },
 ];
-
+const listColumns = [
+  {
+    title: '病例编号',
+    dataIndex: 'id',
+    key: 'id',
+    ellipsis: true,
+    width:100
+  },
+  {
+    title: '姓名',
+    dataIndex: 'name',
+    key: 'name',
+    ellipsis: true,
+    width:100
+  },
+  {
+    title: '性别',
+    dataIndex: 'sex',
+    key: 'sex',
+    ellipsis: true,
+    width:60
+  },
+  {
+    title: '年龄',
+    dataIndex: 'age',
+    key: 'age',
+    ellipsis: true,
+    width:60
+  },
+  {
+    title: '脑卒中分类',
+    dataIndex: 'cva',
+    key: 'cva',
+    ellipsis: true,
+    width: 140,
+    render: cva => {
+      let color = 'geekblue';
+      if (cva === '出血性脑梗塞') {
+        color = 'green';
+      }
+      return (
+        <Tag color={color} key={cva}>
+          {cva}
+        </Tag>
+      );
+    },
+  },
+  
+  {
+    title: '脑损伤阶段',
+    dataIndex: 'state',
+    key: 'state',
+    ellipsis: true,
+    render: state => {
+      return (
+        <span>{stateMap[state]}</span>
+      )
+    },
+  },
+  {
+    title: '负责医师',
+    dataIndex: 'doctor',
+    key: 'doctor',
+    ellipsis: true,
+    width:120
+  },
+  {
+    title: '就诊卡号/医保号',
+    dataIndex: 'recordID',
+    key: 'recordID',
+    ellipsis: true,
+    
+  },
+  {
+    title: '最近更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    ellipsis: true,
+  },
+];
+const operatorColumns = [
+  {
+    title: '病例编号',
+    dataIndex: 'recordID',
+    key: 'recordID',
+    ellipsis: true,
+    width:100
+  },
+  {
+    title: '姓名',
+    dataIndex: 'name',
+    key: 'name',
+    ellipsis: true,
+    width:100
+  },
+  {
+    title: '性别',
+    dataIndex: 'sex',
+    key: 'sex',
+    ellipsis: true,
+    width:60
+  },
+  {
+    title: '年龄',
+    dataIndex: 'age',
+    key: 'age',
+    ellipsis: true,
+    width:60
+  },
+  {
+    title: '脑卒中分类',
+    dataIndex: 'cva',
+    key: 'cva',
+    ellipsis: true,
+    width: 140,
+    render: cva => {
+      let color = 'geekblue';
+      if (cva === '出血性脑梗塞') {
+        color = 'green';
+      }
+      return (
+        <Tag color={color} key={cva}>
+          {cva}
+        </Tag>
+      );
+    },
+  },
+  
+  {
+    title: '脑损伤阶段',
+    dataIndex: 'state',
+    key: 'state',
+    ellipsis: true,
+    render: state => {
+      return (
+        <span>{stateMap[state]}</span>
+      )
+    },
+  },
+  {
+    title: '负责医师',
+    dataIndex: 'doctor',
+    key: 'doctor',
+    ellipsis: true,
+    width:120
+  },
+  {
+    title: '操作',
+    dataIndex: 'id',
+    key: 'action',
+    render: id => (
+      <Space size="middle">
+        <Button>
+          <NavLink to={`/patientInfo/basic/${id}/edit`}>编辑</NavLink>
+        </Button>
+      </Space>
+    ),
+  },
+];
 class DataManager extends React.Component {
   state = {
     filteredInfo: null,
@@ -63,6 +221,7 @@ class DataManager extends React.Component {
     selectionType: null,
     patientData: [],
     mode: 'operator',
+    spinVisible: true,
   };
   
   handleSearch = value => {
@@ -76,7 +235,8 @@ class DataManager extends React.Component {
   componentDidMount() {
     this.http.get('/getPatients').then(res => {
       this.setState({
-        patientData: res.data.data.patientList
+        patientData: res.data.data.patientList,
+        spinVisible: false,
       })
     }, err => {
       this.setState({
@@ -86,166 +246,7 @@ class DataManager extends React.Component {
   }
   
   render() {
-    let { selectionType, patientData = [], mode } = this.state;
-    const listColumns = [
-      {
-        title: '病例编号',
-        dataIndex: 'id',
-        key: 'id',
-        ellipsis: true,
-        width:100
-      },
-      {
-        title: '姓名',
-        dataIndex: 'name',
-        key: 'name',
-        ellipsis: true,
-        width:100
-      },
-      {
-        title: '性别',
-        dataIndex: 'sex',
-        key: 'sex',
-        ellipsis: true,
-        width:60
-      },
-      {
-        title: '年龄',
-        dataIndex: 'age',
-        key: 'age',
-        ellipsis: true,
-        width:60
-      },
-      {
-        title: '脑卒中分类',
-        dataIndex: 'cva',
-        key: 'cva',
-        ellipsis: true,
-        width: 140,
-        render: cva => {
-          let color = 'geekblue';
-            if (cva === '出血性脑梗塞') {
-              color = 'green';
-            }
-            return (
-              <Tag color={color} key={cva}>
-                {cva}
-              </Tag>
-            );
-        },
-      },
-
-      {
-        title: '脑损伤阶段',
-        dataIndex: 'state',
-        key: 'state',
-        ellipsis: true,
-        render: state => {
-          return (
-            <span>{stateMap[state]}</span>
-          )
-        },
-      },
-      {
-        title: '负责医师',
-        dataIndex: 'doctor',
-        key: 'doctor',
-        ellipsis: true,
-        width:120
-      },
-      {
-        title: '就诊卡号/医保号',
-        dataIndex: 'recordID',
-        key: 'recordID',
-        ellipsis: true,
-    
-      },
-      {
-        title: '最近更新时间',
-        dataIndex: 'updateTime',
-        key: 'updateTime',
-        ellipsis: true,
-      },
-    ];
-    const operatorColumns = [
-      {
-        title: '病例编号',
-        dataIndex: 'recordID',
-        key: 'recordID',
-        ellipsis: true,
-        width:100
-      },
-      {
-        title: '姓名',
-        dataIndex: 'name',
-        key: 'name',
-        ellipsis: true,
-        width:100
-      },
-      {
-        title: '性别',
-        dataIndex: 'sex',
-        key: 'sex',
-        ellipsis: true,
-        width:60
-      },
-      {
-        title: '年龄',
-        dataIndex: 'age',
-        key: 'age',
-        ellipsis: true,
-        width:60
-      },
-      {
-        title: '脑卒中分类',
-        dataIndex: 'cva',
-        key: 'cva',
-        ellipsis: true,
-        width: 140,
-        render: cva => {
-          let color = 'geekblue';
-          if (cva === '出血性脑梗塞') {
-            color = 'green';
-          }
-          return (
-            <Tag color={color} key={cva}>
-              {cva}
-            </Tag>
-          );
-        },
-      },
-    
-      {
-        title: '脑损伤阶段',
-        dataIndex: 'state',
-        key: 'state',
-        ellipsis: true,
-        render: state => {
-          return (
-            <span>{stateMap[state]}</span>
-          )
-        },
-      },
-      {
-        title: '负责医师',
-        dataIndex: 'doctor',
-        key: 'doctor',
-        ellipsis: true,
-        width:120
-      },
-      {
-        title: '操作',
-        dataIndex: 'id',
-        key: 'action',
-        render: id => (
-          <Space size="middle">
-            <Button>
-              <NavLink to={`/patientInfo/basic/${id}/edit`}>编辑</NavLink>
-            </Button>
-          </Space>
-        ),
-      },
-    ];
+    let { selectionType, patientData = [], mode, spinVisible } = this.state;
   
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
@@ -275,18 +276,28 @@ class DataManager extends React.Component {
             </div>
           }
         </div>
-        <Radio.Group
-          onChange={({ target: { value } }) => {
-            this.setState({selectionType: value})
-          }}
-          value={selectionType}
-        >
-        </Radio.Group>
-        <Table rowSelection={{
-          type: selectionType,
-          ...rowSelection,
-        }} columns={ mode === 'operator' ? operatorColumns : listColumns} dataSource={patientData} onChange={this.handleChange}
-        pagination = {{position:['bottomCenter']}}/>
+        {
+          spinVisible ? (
+            <div className="spin-container">
+              <Spin size="large"/>
+            </div>
+          ) : (
+            <>
+              <Radio.Group
+                onChange={({ target: { value } }) => {
+                  this.setState({selectionType: value})
+                }}
+                value={selectionType}
+              >
+              </Radio.Group>
+              <Table rowSelection={{
+                type: selectionType,
+                ...rowSelection,
+              }} columns={ mode === 'operator' ? operatorColumns : listColumns} dataSource={patientData} onChange={this.handleChange}
+                     pagination = {{position:['bottomCenter']}}/>
+            </>
+          )
+        }
       </div>
     );
   }

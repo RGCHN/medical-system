@@ -1,9 +1,8 @@
 import React from "react";
-import {Upload, message, Modal, Select, Button, Carousel, Spin, Image } from 'antd';
+import {Upload, message, Modal, Select, Button, Carousel, Image } from 'antd';
 import {  PlusOutlined }from '@ant-design/icons';
 import idContext from '../idContext';
-import './index.scss'
-import userEvent from '@testing-library/user-event';
+import './index.scss';
 
 const { Option } = Select;
 
@@ -37,7 +36,6 @@ class ImgUpload extends React.Component {
     modelType: '0',
     resultId: 0,
     reportUrl:'',
-    spinVisible: true,
   };
   id = this.context;
   
@@ -126,7 +124,6 @@ class ImgUpload extends React.Component {
         perfusionList: data.perfusion.perfusion_imgs,
         modelType: data.modelType.toString(),
         resultId: data['id'],
-        spinVisible: false
       })
     } else {
       this.setState({
@@ -147,139 +144,132 @@ class ImgUpload extends React.Component {
     return (
       <div className='img-upload-container d-flex flex-column ai-center w-100'>
         {
-          spinVisible && (
-            <div className="spin-container">
-              <Spin />
-            </div>
-          )
-        }
-        {
           mode === 'show' && (
             <div className="img-upload-side d-flex flex-column ">
-                {
-                  this.getImgList(ADCList)
-                }
-                {
-                  this.getImgList(DWIList)
-                }
-                <div className="img-upload-content mt-3 h-100 w-100">
-                  <div className="d-flex jc-between ai-center">
-                    <div className="model-choose d-flex ai-center mb-3">
-                      <div className='mr-3'>选择模型</div>
-                      <Select
-                        defaultValue={modelType}
-                        style={{ width: 120 }}
-                        className='mr-5'
-                        onChange={this.selectModel}
-                        disabled>
-                        <Option value="0">ALEM</Option>
-                        <Option value="1">AUet</Option>
-                        <Option value="2">PC-Net</Option>
-                        <Option value="3">MSM-Net</Option>
-                      </Select>
-                      <Button type="primary" onClick={this.goPredict} disabled>预测</Button>
-                    </div>
-                    <div className="result-operation d-flex ai-center m-3">
-                      <Button type='primary mr-3' onClick={this.getReport}>下载生成辅助报告</Button>
-                    </div>
+              {
+                this.getImgList(ADCList)
+              }
+              {
+                this.getImgList(DWIList)
+              }
+              <div className="img-upload-content mt-3 h-100 w-100">
+                <div className="d-flex jc-between ai-center">
+                  <div className="model-choose d-flex ai-center mb-3">
+                    <div className='mr-3'>选择模型</div>
+                    <Select
+                      defaultValue={modelType}
+                      style={{ width: 120 }}
+                      className='mr-5'
+                      onChange={this.selectModel}
+                      disabled>
+                      <Option value="0">ALEM</Option>
+                      <Option value="1">AUet</Option>
+                      <Option value="2">PC-Net</Option>
+                      <Option value="3">MSM-Net</Option>
+                    </Select>
+                    <Button type="primary" onClick={this.goPredict} disabled>预测</Button>
                   </div>
-    
-                  <div className="result-container w-100">
-                    <div className="result-show w-100">
-                      <div className="title w-100 pl-4">查看结果</div>
-                      <div style={{marginLeft:'20px'}}>
-  
-                        <div>【血管再通】</div>
-                        {
-                          this.getImgList(perfusionList)
-                          
-                        }
-                        <div>【血管未再通】</div>
-                        {
-                          this.getImgList(nonPerfusion)
-                        }
-                      </div>
-                    </div>
+                  <div className="result-operation d-flex ai-center m-3">
+                    <Button type='primary mr-3' onClick={this.getReport}>下载生成辅助报告</Button>
                   </div>
-  
                 </div>
+          
+                <div className="result-container w-100">
+                  <div className="result-show w-100">
+                    <div className="title w-100 pl-4">查看结果</div>
+                    <div style={{marginLeft:'20px'}}>
+                
+                      <div>【血管再通】</div>
+                      {
+                        this.getImgList(perfusionList)
+                  
+                      }
+                      <div>【血管未再通】</div>
+                      {
+                        this.getImgList(nonPerfusion)
+                      }
+                    </div>
+                  </div>
+                </div>
+        
               </div>
+            </div>
           )
         }
         {
           mode === 'edit' && (
             <div className="img-upload-side d-flex flex-column ">
-                <div className="adc-container">
-                  <Upload
-                    action="http://10.13.81.190:5051/api/imgUpload"
-                    listType="picture-card"
-                    className='adc-img-card'
-                    fileList={ ADCList }
-                    onPreview={this.handlePreview}
-                    onChange={this.handleADCChange}
-                    withCredentials={true}
-                    data={{
-                      patientID: this.id,
-                      type:'ADC'
-                    }}
-                  >
-                    {ADCList.length >=21 ? null:uploadButton("ADC影像")}
-                  </Upload>
-                  <Modal
-                    visible={previewVisible}
-                    footer={null}
-                    onCancel={this.handleCancel}
-                  >
-                    <img alt="ADC" style={{ width: "100%" }} src={previewImage} />
-                  </Modal>
-                </div>
-                <div className='dwi-container'>
-                  <Upload
-                    action="http://10.13.81.190:5051/api/imgUpload"
-                    listType="picture-card"
-                    fileList={DWIList}
-                    onPreview={this.handlePreview}
-                    onChange={this.handleDWIChange}
-                    progress={{ strokeWidth: 2, showInfo: false }}
-                    data={{
-                      patientID: this.id,
-                      type:'DWI'
-                    }}
-                  >
-                    {DWIList.length >= 21? null:uploadButton("DWI影像")}
-                  </Upload>
-                  <Modal
-                    visible={previewVisible}
-                    footer={null}
-                    onCancel={this.handleCancel}
-                  >
-                  </Modal>
-                </div>
-                <div className="img-upload-content mt-3 h-100 w-100">
-                  <div className="d-flex jc-between ai-center">
-                    <div className="model-choose d-flex ai-center mb-3">
-                      <div className='mr-3'>选择模型</div>
-                      <Select defaultValue={modelType} style={{ width: 120 }} className='mr-5' onChange={this.selectModel}>
-                        <Option value="0">ALEM</Option>
-                        <Option value="1">AUet</Option>
-                        <Option value="2">PC-Net</Option>
-                        <Option value="3">MSM-Net</Option>
-                      </Select>
-                      <Button type="primary" onClick={this.goPredict}>预测</Button>
-                    </div>
-                    <div className="result-operation d-flex ai-center m-3">
-                      <Button type='primary mr-3' onClick={this.getReport} >下载生成辅助报告</Button>
-                    </div>
-                  </div>
-    
-                  <div className="result-container w-100">
-                    <div className="result-show w-100">
-                      <div className="title w-100 pl-4">查看结果</div>
-                    </div>
-                  </div>
-  
-                </div>
+              <div className="adc-container">
+                <Upload
+                  action="http://10.13.81.190:5051/api/imgUpload"
+                  listType="picture-card"
+                  className='adc-img-card'
+                  fileList={ ADCList }
+                  onPreview={this.handlePreview}
+                  onChange={this.handleADCChange}
+                  withCredentials={true}
+                  data={{
+                    patientID: this.id,
+                    type:'ADC'
+                  }}
+                >
+                  {ADCList.length >=21 ? null:uploadButton("ADC影像")}
+                </Upload>
+                <Modal
+                  visible={previewVisible}
+                  footer={null}
+                  onCancel={this.handleCancel}
+                >
+                  <img alt="ADC" style={{ width: "100%" }} src={previewImage} />
+                </Modal>
               </div>
+              <div className='dwi-container'>
+                <Upload
+                  action="http://10.13.81.190:5051/api/imgUpload"
+                  listType="picture-card"
+                  fileList={DWIList}
+                  onPreview={this.handlePreview}
+                  onChange={this.handleDWIChange}
+                  progress={{ strokeWidth: 2, showInfo: false }}
+                  data={{
+                    patientID: this.id,
+                    type:'DWI'
+                  }}
+                >
+                  {DWIList.length >= 21? null:uploadButton("DWI影像")}
+                </Upload>
+                <Modal
+                  visible={previewVisible}
+                  footer={null}
+                  onCancel={this.handleCancel}
+                >
+                </Modal>
+              </div>
+              <div className="img-upload-content mt-3 h-100 w-100">
+                <div className="d-flex jc-between ai-center">
+                  <div className="model-choose d-flex ai-center mb-3">
+                    <div className='mr-3'>选择模型</div>
+                    <Select defaultValue={modelType} style={{ width: 120 }} className='mr-5' onChange={this.selectModel}>
+                      <Option value="0">ALEM</Option>
+                      <Option value="1">AUet</Option>
+                      <Option value="2">PC-Net</Option>
+                      <Option value="3">MSM-Net</Option>
+                    </Select>
+                    <Button type="primary" onClick={this.goPredict}>预测</Button>
+                  </div>
+                  <div className="result-operation d-flex ai-center m-3">
+                    <Button type='primary mr-3' onClick={this.getReport} >下载生成辅助报告</Button>
+                  </div>
+                </div>
+          
+                <div className="result-container w-100">
+                  <div className="result-show w-100">
+                    <div className="title w-100 pl-4">查看结果</div>
+                  </div>
+                </div>
+        
+              </div>
+            </div>
           )
         }
       </div>

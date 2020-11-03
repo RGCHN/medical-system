@@ -22,6 +22,10 @@ a{
   background-color: map-get($colors,'bg');
 }
 
+.spin-container{
+  transform: translate(50%, 50%);
+}
+
 //定义文字和背景颜色 键值对
 @each $colorKey,$color in $colors{
   .text-#{$colorKey}{
