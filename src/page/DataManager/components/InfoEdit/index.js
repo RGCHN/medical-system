@@ -63,6 +63,18 @@ class InfoEdit extends React.Component {
   }
   
   componentDidMount() {
+    const id = this.context;
+    console.log(`id:${id}`);
+    if (id && id!== 'new') {
+      this.http.post('/getPatientByID', {patientID: id}).then(
+        res => {
+          console.log(res);
+        },
+        err => {
+        
+        }
+      )
+    }
     this.setState({
       mode: this.props.type || 'edit'
     })
@@ -80,8 +92,6 @@ class InfoEdit extends React.Component {
   }
   
   render() {
-    console.log('context')
-    console.log(this.context);
     const { mode, patient } = this.state;
     return (
       <div className="info-container w-100 px-3">

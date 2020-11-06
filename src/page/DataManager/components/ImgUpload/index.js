@@ -76,15 +76,17 @@ class ImgUpload extends React.Component {
   }
   
   getReport = () => {
-    this.modelHttp.post('/getReport',{resultID: this.state.resultId}).then(
+    this.modelHttp.post('/getReport',{resultID: this.state.resultId}, {responseType:'blob'}).then(
       res => {
         console.log(res);
+        const blob = new Blob([res.data], {
+          type: 'application/pdf',// word是msword
+        });
+        const objectUrl = URL.createObjectURL(blob);
         const aLink = document.createElement('a');
-        const blob = new Blob([res.data]);
         aLink.style.display='none';
-        aLink.href = blob;
-        console.log(blob);
-        aLink.download=this.state.resultId;
+        aLink.href = objectUrl;
+        aLink.download=`${this.state.resultId}结果报告`;
         document.body.appendChild(aLink);
         aLink.click();
         document.body.removeChild(aLink);

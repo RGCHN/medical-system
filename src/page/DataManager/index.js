@@ -290,11 +290,15 @@ class DataManager extends React.Component {
                 value={selectionType}
               >
               </Radio.Group>
-              <Table rowSelection={{
+              <Table
+                rowSelection={{
                 type: selectionType,
                 ...rowSelection,
-              }} columns={ mode === 'operator' ? operatorColumns : listColumns} dataSource={patientData} onChange={this.handleChange}
-                     pagination = {{position:['bottomCenter']}}/>
+                }}
+                columns={ mode === 'operator' ? operatorColumns : listColumns}
+                dataSource={patientData}
+                onChange={this.handleChange}
+                pagination = {{position:['bottomCenter']}}/>
             </>
           )
         }

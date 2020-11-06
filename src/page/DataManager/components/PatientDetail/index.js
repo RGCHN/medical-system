@@ -56,9 +56,15 @@ class PatientDetail extends React.Component {
     })
   }
   
+  componentWillReceiveProps(nextProps, nextContext) {
+    const {id} = nextProps.match.params;
+    this.setState({
+      patientID: id,
+    })
+  }
   
   render() {
-    const { sideKey,patientID, disabled, type} = this.state;
+    const { sideKey, patientID, disabled, type} = this.state;
     return (
       <div className='patient-edit-container m-3'>
         <idContext.Provider value={patientID}>
@@ -77,9 +83,6 @@ class PatientDetail extends React.Component {
               </Menu>
             </Sider>
             <Content>
-              {
-              
-              }
               {
                 sideKey === 'basic' && (
                   <>
