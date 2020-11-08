@@ -155,7 +155,18 @@ const operatorColumns = [
     dataIndex: 'sex',
     key: 'sex',
     ellipsis: true,
-    width:60
+    width:60,
+    render: sex => {
+      if (sex.toString() === '0') {
+        return (
+          <span>男</span>
+        )
+      } else {
+        return (
+          <span>女</span>
+        )
+      }
+    }
   },
   {
     title: '年龄',
@@ -172,12 +183,12 @@ const operatorColumns = [
     width: 140,
     render: cva => {
       let color = 'geekblue';
-      if (cva === '出血性脑梗塞') {
+      if (cva === "in") {
         color = 'green';
       }
       return (
         <Tag color={color} key={cva}>
-          {cva}
+          {cva === "in" ? "缺血性脑梗塞" : "出血性脑梗塞"}
         </Tag>
       );
     },

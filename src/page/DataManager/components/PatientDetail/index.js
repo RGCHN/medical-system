@@ -65,9 +65,10 @@ class PatientDetail extends React.Component {
   
   render() {
     const { sideKey, patientID, disabled, type} = this.state;
+    const { id } = this.props.match.params;
     return (
-      <div className='patient-edit-container m-3'>
-        <idContext.Provider value={patientID}>
+      <idContext.Provider value={id}>
+        <div className='patient-edit-container m-3'>
           <Layout>
             <Sider className="site-layout-background" style={{height:'100vh', overflow: 'auto'}}>
               <Menu
@@ -120,8 +121,8 @@ class PatientDetail extends React.Component {
               }
             </Content>
           </Layout>
-        </idContext.Provider>
-      </div>
+        </div>
+      </idContext.Provider>
     )
   }
 }

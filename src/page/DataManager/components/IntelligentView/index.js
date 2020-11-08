@@ -43,7 +43,7 @@ export default class IntelligentView extends React.Component{
         confirmLoading: false,
       });
       message.success("添加诊疗记录成功！")
-    }, 800);
+    }, 500);
   };
   
   
@@ -71,12 +71,23 @@ export default class IntelligentView extends React.Component{
     const id = this.context;
     this.modelHttp.post('/getResultsByPatient',{patientID:id}).then(
       res => {
+        console.log(res);
+        if (res.data.status === "fail") {
+          message.error(res.data.msg);
+          this.setState({
+            spinVisible: false,
+          })
+        } else {
+          this.setState({
+            recordList: res.data.data.results || [],
+            spinVisible: false,
+          })
+        }
+      }, err => {
+        message.error('网络错误！请稍后重试！');
         this.setState({
-          recordList: res.data.data.results,
           spinVisible: false,
         })
-      }, err => {
-        message.error('网络错误！请稍后重试！')
       }
     )
   }

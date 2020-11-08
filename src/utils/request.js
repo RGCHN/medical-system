@@ -17,14 +17,13 @@ http.interceptors.request.use(config=>{
 http.interceptors.response.use(res => {
   console.log('响应查看')
   console.log(res);
-  if (res.data.msg === "未登录请先登录") {
+  if (res.data.msg.toString() === "NoLogin") {
     history.push('/login');
   }
   return res
 }, err => {
   console.log('错误查看')
   console.log(err);
-  //history.push('/login')
   return Promise.reject(err)
 })
 
@@ -45,14 +44,13 @@ modelHttp.interceptors.request.use(config=>{
 modelHttp.interceptors.response.use(res => {
   console.log('响应')
   console.log(res);
-  if (res.data.msg === "未登录请先登录") {
+  if (res.data.msg === "NoLogin") {
     history.push('/login');
   }
   return res
 }, err => {
   console.log('错误查看')
   console.log(err);
-  //history.push('/login')
   return Promise.reject(err)
 })
 

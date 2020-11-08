@@ -1,5 +1,9 @@
 .info-container{
   position: relative;
+  .text-format{
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5)
+  }
   .info-edit{
     .description{
       .ant-form-item-label{
