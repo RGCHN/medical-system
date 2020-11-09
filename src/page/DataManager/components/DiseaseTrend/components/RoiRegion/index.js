@@ -22,7 +22,7 @@ export default class RoiRegion extends Component{
     this.modelHttp.post('/getPerfImgs',{patientID:id}).then(
       res => {
         this.setState({
-          perfImgs: res.data.data.perf_imgs,
+          perfImgs: res.data.data.perf_imgs || [],
         })
       }, err => {
         message.error('网络错误！请稍后重试！')
@@ -46,8 +46,10 @@ export default class RoiRegion extends Component{
   }
   
   render() {
-    const { perfImgs } = this.state;
-    console.log(perfImgs)
+    let { perfImgs = [] } = this.state;
+    if (perfImgs === undefined) {
+      perfImgs = [];
+    }
     return (
       <div className="region-container">
         <Collapse defaultActiveKey={[0]}>
@@ -59,7 +61,7 @@ export default class RoiRegion extends Component{
                 }
                 <div className="desc">
                   {
-                    perf.text_info.slice(20, -1)
+                    perf.text_info.slice(42, -1)
                   }
                 </div>
               </Panel>

@@ -28,6 +28,10 @@ const NAV_ITEM = [
   {
     name: '账号管理',
     link: '/profile'
+  },
+  {
+    name: '退出',
+    link: '/login'
   }
 ];
 
@@ -47,20 +51,6 @@ class App extends React.Component{
   
   render() {
     const {current} = this.state;
-    const menu = (
-      <Menu>
-        <Menu.Item key="center">
-          <NavLink to='/profile'>
-            用户中心
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="exit">
-          <NavLink to='/login' isActive={clearToken}>
-            退出
-          </NavLink>
-        </Menu.Item>
-      </Menu>
-    )
     return (
       <Router history={history} >
         <Switch>
@@ -87,15 +77,6 @@ class App extends React.Component{
                       }
                     </Menu>
                   </Content>
-                  <Sider className='menu-container'>
-                    <BellOutlined />
-                    <Dropdown overlay={menu} trigger={['click']}>
-                      <div className="ant-dropdown-link ml-3" onClick={e => e.preventDefault()}>
-                        用户名
-                        <DownOutlined />
-                      </div>
-                    </Dropdown>
-                  </Sider>
                 </Layout>
               </Header>
               <Divider />

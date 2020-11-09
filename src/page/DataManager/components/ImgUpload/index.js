@@ -1,5 +1,5 @@
 import React from "react";
-import {Upload, message, Select, Button, Carousel, Image, Spin} from 'antd';
+import {Upload, message, Select, Button, Carousel, Image, Spin, Progress} from 'antd';
 import { UploadOutlined }from '@ant-design/icons';
 import idContext from '../idContext';
 import './index.scss';
@@ -40,30 +40,56 @@ class ImgUpload extends React.Component {
     dwiFileName: '',
     uploading: false,
     predicting: false,
+    adcUploadPercent: 0,
+    dwiUploadPercent: 0,
+    analyzePercent: 0,
+    resultInfo: '',
+    resultSize: '',
   }
   id = this.context;
-  
+  timeStamp = '';
   
   goPredict = () => {
     this.setState({
+      analyzePercent: 0,
       predicting: true
     });
+    const predictInterval = setInterval(() => {
+      const currentPercent = this.state.analyzePercent;
+      if (currentPercent <= 98) {
+        this.setState({
+          analyzePercent: currentPercent + 1
+        })
+      } else {
+        clearInterval(predictInterval);
+      }
+    }, 2000)
     this.modelHttp.post('/analyze',{
       adc_file: this.state.adcFileName,
       backmodel : this.state.modelType,
       dwi_file: this.state.dwiFileName,
       patientID: this.id,
-      
+      timestamp: this.timeStamp,
     }).then(
       res => {
+        if (predictInterval) {
+          clearInterval(predictInterval);
+        }
+        this.setState({
+          predicting: false,
+          analyzePercent: 100,
+        })
         if (res.data.status === 'fail') {
           message.error('输入参数有误！请重新输入')
         } else {
-        
+          this.setState({
+            nonPerfusion: res.data.data.nonperf_res_imgs,
+            perfusionList: res.data.data.perf_res_imgs,
+            resultInfo: res.data.data.info,
+            resultSize: res.data.data.size,
+            resultId: res.data.data.resultID
+          })
         }
-        this.setState({
-          resultInfo: res.data.info,
-        })
       }, err => {
         message.error('网络错误！请稍后重试！')
       }
@@ -73,15 +99,14 @@ class ImgUpload extends React.Component {
   getReport = () => {
     this.modelHttp.post('/getReport',{resultID: this.state.resultId}, {responseType:'blob'}).then(
       res => {
-        console.log(res);
         const blob = new Blob([res.data], {
-          type: 'application/pdf',// word是msword
+          type: 'application/msword',// word是msword
         });
         const objectUrl = URL.createObjectURL(blob);
         const aLink = document.createElement('a');
         aLink.style.display='none';
         aLink.href = objectUrl;
-        aLink.download=`${this.state.resultId}结果报告`;
+        aLink.download='结果报告';
         document.body.appendChild(aLink);
         aLink.click();
         document.body.removeChild(aLink);
@@ -93,7 +118,9 @@ class ImgUpload extends React.Component {
   }
   
   selectModel = value => {
-    this.selectedModel = value;
+    this.setState({
+      modelType: value
+    })
   }
   
   getImgList = (imgData, text) => {
@@ -119,7 +146,9 @@ class ImgUpload extends React.Component {
   }
   
   componentDidMount() {
-    const { data } = this.props;
+    const { data, timeStamp } = this.props;
+    this.timeStamp = timeStamp;
+    console.log(`timeStamp ${timeStamp}`)
     if (data.id) {
       this.setState({
         mode: 'show',
@@ -129,6 +158,8 @@ class ImgUpload extends React.Component {
         perfusionList: data.perfusion.perfusion_imgs,
         modelType: data.modelType.toString(),
         resultId: data['id'],
+        resultInfo: data.info,
+        resultSize: data.size,
       })
     } else {
       this.setState({
@@ -197,60 +228,67 @@ class ImgUpload extends React.Component {
     this.setState({
       uploading: true,
     });
-  
-    this.modelHttp.post('/imgUpload',adcForm, {
+    
+    const uploadInterval = setInterval(() => {
+      const newPercent = this.state.uploadPercent + Math.random().toFixed(2) + 5;
+      if (newPercent <= 96) {
+        this.setState({
+          uploadPercent: newPercent
+        })
+      } else {
+        this.setState({
+          uploadPercent: 96 + Math.random().toFixed(2)
+        })
+      }
+    }, 1000)
+    
+    Promise.all([this.modelHttp.post('/imgUpload',adcForm, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
-    }).then(
-      res => {
-        if (res.data.status === 'success') {
-          message.success('ADC影像上传成功！');
-          this.setState({
-            ADCList: res.data.data.imgs,
-            adcFileName: res.data.data.filename,
-          })
-        }
-        this.setState({
-          uploading: false,
-        });
       },
-      err => {
+      onUploadProgress: progressEvent => {
+        const complete = (progressEvent.loaded / progressEvent.total * 100 | 0);
         this.setState({
-          uploading: false,
-        });
-        message.error('网络错误！请稍后重试！')
+          adcUploadPercent: complete
+        })
       }
-    );
-  
-    this.modelHttp.post('/imgUpload',dwiForm, {
+    }),this.modelHttp.post('/imgUpload',dwiForm, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
-    }).then(
-      res => {
-        if (res.data.status === 'success') {
-          message.success('DWI影像上传成功！');
-          this.setState({
-            DWIList: res.data.data.imgs,
-            dwiFileName: res.data.data.filename,
-          })
-        }
-        this.setState({
-          uploading: false,
-        });
       },
-      err => {
+      onUploadProgress: progressEvent => {
+        const complete = (progressEvent.loaded / progressEvent.total * 100 | 0);
+        this.setState({
+          dwiUploadPercent: complete
+        })
+      }
+    })]).then(
+      results => {
+        clearInterval(uploadInterval);
+        const adcResult = results[0];
+        const dwiResult = results[1];
         this.setState({
           uploading: false,
-        });
-        message.error('网络错误！请稍后重试！')
+        })
+        if (adcResult.data.status === 'success' && dwiResult.data.status === 'success') {
+          message.success('上传成功！')
+          this.setState({
+            ADCList: adcResult.data.data.imgs,
+            adcFileName: adcResult.data.data.filename,
+            DWIList: dwiResult.data.data.imgs,
+            dwiFileName: dwiResult.data.data.filename,
+            uploadPercent: 100,
+          })
+        } else {
+          message.error('网络错误！请稍后重试！')
+        }
+        
       }
     )
   };
   
   render() {
-    const { ADCList, DWIList, mode, modelType, nonPerfusion, perfusionList, spinVisible, adcUpload, dwiUpload, uploading, predicting} = this.state;
+    const { ADCList, DWIList, mode, modelType, nonPerfusion, perfusionList, spinVisible, adcUpload, dwiUpload, uploading, predicting, adcUploadPercent, dwiUploadPercent, analyzePercent, resultInfo, resultSize} = this.state;
     
     return (
       <div className='img-upload-container d-flex flex-column ai-center w-100'>
@@ -264,52 +302,60 @@ class ImgUpload extends React.Component {
               <div className="img-upload-side d-flex flex-column ">
                 {
                   mode === 'edit' && (
-                    <div className="file-upload-container d-flex ai-start">
-                    <div className="adc-container d-flex ai-start mr-3">
-                      <Upload
-                        name="file"
-                        fileList={adcUpload}
-                        onRemove={file => this.onRemove(file)}
-                        beforeUpload={file => this.beforeUpload(file, 'ADC')}
-                        progress={{
-                          strokeColor: {
-                            '0%': '#108ee9',
-                            '100%': '#87d068',
-                          },
-                          strokeWidth: 3,
-                          format: percent => `${parseFloat(percent.toFixed(2))}%`,
-                        }}
-                      >
-                        <Button icon={<UploadOutlined />}>选择ADC影像</Button>
-                      </Upload>
-                    </div>
-                    <div className="dwi-container d-flex ai-start mr-3">
-                      <Upload
-                        name="file"
-                        fileList={dwiUpload}
-                        onRemove={file => this.onRemove(file)}
-                        beforeUpload={file => this.beforeUpload(file, 'DWI')}
-                        progress={{
-                          strokeColor: {
-                            '0%': '#108ee9',
-                            '100%': '#87d068',
-                          },
-                          strokeWidth: 3,
-                          format: percent => `${parseFloat(percent.toFixed(2))}%`,
-                        }}
-                      >
-                        <Button icon={<UploadOutlined />}>选择DWI影像</Button>
-                      </Upload>
-                    </div>
-                    <Button
-                      type="primary"
-                      onClick={this.handleUpload}
-                      disabled={adcUpload.length !== 1}
-                      loading={uploading}
-                    >
-                      {uploading ? '正在上传' : '开始上传'}
-                    </Button>
-                  </div>
+                    <>
+                      <div className="file-upload-container d-flex ai-start">
+                        <div className="adc-container d-flex ai-start mr-3">
+                          <Upload
+                            name="file"
+                            fileList={adcUpload}
+                            onRemove={file => this.onRemove(file)}
+                            beforeUpload={file => this.beforeUpload(file, 'ADC')}
+                          >
+                            <Button icon={<UploadOutlined />}>选择ADC影像</Button>
+                          </Upload>
+                        </div>
+                        <div className="dwi-container d-flex ai-start mr-3">
+                          <Upload
+                            name="file"
+                            fileList={dwiUpload}
+                            onRemove={file => this.onRemove(file)}
+                            beforeUpload={file => this.beforeUpload(file, 'DWI')}
+                          >
+                            <Button icon={<UploadOutlined />}>选择DWI影像</Button>
+                          </Upload>
+                        </div>
+                        <Button
+                          type="primary"
+                          onClick={this.handleUpload}
+                          disabled={adcUpload.length !== 1}
+                          loading={uploading}
+                        >
+                          {uploading ? '正在上传' : '开始上传'}
+                        </Button>
+                      </div>
+                      <div className="upload-progress mt-3">
+                        <div>
+                          <div>【ADC影像上传进度】</div>
+                          <Progress
+                            strokeColor={{
+                              '0%': '#108ee9',
+                              '100%': '#87d068',
+                            }}
+                            percent={adcUploadPercent}
+                          />
+                        </div>
+                        <div>
+                          <div>【DWI影像上传进度】</div>
+                          <Progress
+                            strokeColor={{
+                              '0%': '#108ee9',
+                              '100%': '#87d068',
+                            }}
+                            percent={dwiUploadPercent}
+                          />
+                        </div>
+                      </div>
+                    </>
                   )
                 }
                 <div className="d-flex flex-column ">
@@ -349,14 +395,26 @@ class ImgUpload extends React.Component {
                       <Button type='primary mr-3' onClick={this.getReport}>下载生成辅助报告</Button>
                     </div>
                   </div>
-      
+                  <div className="w-80">
+                    <div>【模型分析进度】</div>
+                    <Progress
+                      strokeColor={{
+                        '0%': '#108ee9',
+                        '100%': '#87d068',
+                      }}
+                      percent={analyzePercent}
+                    />
+                  </div>
                   <div className="result-container w-100">
                     <div className="result-show w-100">
-                      <div className="title w-100 pl-4">查看结果</div>
+                      <div className="title w-100 pl-4">
+                        <span>查看结果</span>
+                        <span className="mx-3"> 溶栓治疗潜在获益评估： {resultInfo}</span>
+                        {/*<span className="mx-3">梗死核心预测尺寸: {resultSize}</span>*/}
+                      </div>
                       <div style={{marginLeft:'20px', minHeight: '100px'}}>
                         {
                           this.getImgList(perfusionList, '【血管再通】')
-              
                         }
                         {
                           this.getImgList(nonPerfusion, '【血管未再通】')

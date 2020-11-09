@@ -18,14 +18,10 @@ const defaultConfig = {
   forceFit: true,
   title: {
     visible: true,
-    text: '溶栓治疗获益',
+    text: '溶栓治疗获益变化趋势',
   },
   xField: 'time',
   yField: 'info',
-  yAxis: {
-    min: 36,
-    max: 150,
-  },
 };
 export default class RoiBenefit extends Component{
   state = {
@@ -35,7 +31,6 @@ export default class RoiBenefit extends Component{
   componentDidMount() {
     const id = this.context;
     this.modelHttp.post('getInfoTrend',{patientID: id}).then(res =>{
-      console.log(res);
       const benefitList = res.data.data.infoTrend;
       this.setState({
         benefitList

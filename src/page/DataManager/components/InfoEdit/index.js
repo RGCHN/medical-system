@@ -51,7 +51,6 @@ class InfoEdit extends React.Component {
   
   componentDidMount() {
     const id = this.context;
-    console.log(`id:${id}`);
     if (id && id!== 'new') {
       this.http.post('/getPatientByID', {patientID: id}).then(
         res => {

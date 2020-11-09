@@ -57,21 +57,20 @@ export default class IntelligentView extends React.Component{
     this.tempDate = dateString;
   }
   
-  genExtra = index => {
+  /*genExtra = index => {
     return (
       <>
         <EditFilled className='mx-3'/>
         <CloseOutlined />
       </>
     )
-  }
+  }*/
   
   
   componentDidMount() {
     const id = this.context;
     this.modelHttp.post('/getResultsByPatient',{patientID:id}).then(
       res => {
-        console.log(res);
         if (res.data.status === "fail") {
           message.error(res.data.msg);
           this.setState({
@@ -119,8 +118,8 @@ export default class IntelligentView extends React.Component{
           <Collapse defaultActiveKey={[defaultKey]}>
             {
               recordList.length !== 0 && recordList.map((record,index) => (
-                <Panel key={index} header={record.time.slice(0, 11)} extra={this.genExtra(index)}>
-                  <ImgUpload data={record}/>
+                <Panel key={index} header={record.time.slice(0, 11)} /*extra={this.genExtra(index)}*/>
+                  <ImgUpload data={record} timeStamp={new Date(record.time).getTime()}/>
                 </Panel>
               ))
             }

@@ -21,11 +21,7 @@ const defaultConfig = {
     text: '梗死区域面积变化趋势',
   },
   xField: 'time',
-  yField: 'info',
-  yAxis: {
-    min: 10,
-    max: 200,
-  },
+  yField: 'size',
 };
 export default class RoiTrend extends Component{
   state = {
@@ -35,7 +31,6 @@ export default class RoiTrend extends Component{
   componentDidMount() {
     const id = this.context;
     this.modelHttp.post('getSizeTrend',{patientID: id}).then(res =>{
-      console.log(res);
       const trendList = res.data.data.sizeTrend;
       this.setState({
         trendList
