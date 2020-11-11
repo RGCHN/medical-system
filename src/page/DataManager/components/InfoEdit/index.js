@@ -2,8 +2,9 @@ import React from "react";
 import {Divider, Button, Form, Input, DatePicker, Radio, Select,Row, Col,Descriptions, message, Spin } from "antd";
 import moment from 'moment';
 import idContext from '../idContext';
+import history from '../../../../utils/history';
+import {get, stateMap} from '../../../../utils/tools';
 import './index.scss';
-import {stateMap} from '../../../../utils/tools';
 
 const { TextArea } = Input;
 class InfoEdit extends React.Component {
@@ -54,9 +55,8 @@ class InfoEdit extends React.Component {
     if (id && id!== 'new') {
       this.http.post('/getPatientByID', {patientID: id}).then(
         res => {
-          console.log(res);
           this.setState({
-            patient: res.data.data.patient,
+            patient: get(res, 'data.data.patient', {}),
             spinVisible: false,
           });
         },
@@ -100,18 +100,33 @@ class InfoEdit extends React.Component {
                     <Divider orientation="left">个人信息</Divider>
                     <Row gutter={24}>
                       <Col span={8} key='recordID' defaultValue={patient.recordID}>
-                        <Form.Item label="就诊卡号/医保号" name="recordID" initialValue={patient.recordID || ''}>
+                        <Form.Item label="就诊卡号/医保号" name="recordID" initialValue={patient.recordID || ''} rules={[
+                          {
+                            required: true,
+                            message: '请输入就诊卡号/医保号',
+                          },
+                        ]}>
                           <Input />
                         </Form.Item>
                       </Col>
           
                       <Col span={8} key='name'>
-                        <Form.Item label="姓名" name="name" initialValue={patient.name || ''}>
+                        <Form.Item label="姓名" name="name" initialValue={patient.name || ''} rules={[
+                          {
+                            required: true,
+                            message: '请输入姓名',
+                          },
+                        ]}>
                           <Input />
                         </Form.Item>
                       </Col>
                       <Col span={8} key='sex'>
-                        <Form.Item label="性别" name="sex" initialValue={patient.sex || '0'}>
+                        <Form.Item label="性别" name="sex" initialValue={patient.sex || '0'} rules={[
+                          {
+                            required: true,
+                            message: '请输入性别',
+                          },
+                        ]}>
                           <Radio.Group >
                             <Radio value="0">男</Radio>
                             <Radio value="1">女</Radio>
@@ -126,7 +141,12 @@ class InfoEdit extends React.Component {
                       </Col>
           
                       <Col span={8} key='state'>
-                        <Form.Item label="病人状态" name="state" initialValue={patient.state || "1"}>
+                        <Form.Item label="病人状态" name="state" initialValue={patient.state || "1"} rules={[
+                          {
+                            required: true,
+                            message: '请输入病人状态',
+                          },
+                        ]}>
                           <Select>
                             <Select.Option value="1">超急性期(0-6小时)</Select.Option>
                             <Select.Option value="2">急性期(6-24小时)</Select.Option>
@@ -142,7 +162,12 @@ class InfoEdit extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={8} key='cva'>
-                        <Form.Item label="脑卒中分类" name="cva" initialValue={patient.cva || "in"}>
+                        <Form.Item label="脑卒中分类" name="cva" initialValue={patient.cva || "in"} rules={[
+                          {
+                            required: true,
+                            message: '请输入脑卒中分类',
+                          },
+                        ]}>
                           <Select >
                             <Select.Option value="in">缺血性脑梗塞</Select.Option>
                             <Select.Option value="die">出血性脑梗塞</Select.Option>
@@ -159,6 +184,12 @@ class InfoEdit extends React.Component {
                           className='description'
                           name="info"
                           initialValue={patient.info || ''}
+                          rules={[
+                            {
+                              required: true,
+                              message: '请输入疾病信息',
+                            },
+                          ]}
                         >
                           <TextArea rows={4} />
                         </Form.Item>
@@ -167,7 +198,17 @@ class InfoEdit extends React.Component {
                         </div>
                       </Col>
                       <Col span={12} wrappercol={{span: 24}} key='result' >
-                        <Form.Item label="诊疗结果" className='result' name="result" initialValue={patient.result || ''}>
+                        <Form.Item
+                          label="诊疗结果"
+                          className='result'
+                          name="result"
+                          initialValue={patient.result || ''}
+                          rules={[
+                            {
+                              required: true,
+                              message: '请输入诊疗结果',
+                            },
+                          ]}>
                           <TextArea rows={4} />
                         </Form.Item>
                         <div className="text-format">
@@ -188,7 +229,7 @@ class InfoEdit extends React.Component {
                   <div className='info-viewer'>
                     <div className="button-container">
                       <Button type="primary" className='edit-button' onClick={ () => this.changeMode('edit')}>编辑</Button>
-                      <Button type="primary" className='back-button ml-3'>返回</Button>
+                      <Button type="primary" className='back-button ml-3' onClick={() => {history.push('/patientList/operator')}}>返回</Button>
                     </div>
                     <Descriptions bordered title="个人信息" column={3} className='basic-info-viewer'>
                       <Descriptions.Item label="就诊卡号/医保号">{patient.recordID}</Descriptions.Item>

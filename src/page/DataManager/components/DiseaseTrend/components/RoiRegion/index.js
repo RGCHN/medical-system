@@ -1,7 +1,8 @@
 import React, {Component} from "react";
-import { Carousel, Collapse, message, Image } from "antd";
-import './index.scss'
+import {Carousel, Collapse, message, Image, Empty} from "antd";
+import {get} from '../../../../../../utils/tools';
 import idContext from '../../../idContext';
+import './index.scss';
 
 const { Panel } = Collapse;
 const settings = {
@@ -22,7 +23,7 @@ export default class RoiRegion extends Component{
     this.modelHttp.post('/getPerfImgs',{patientID:id}).then(
       res => {
         this.setState({
-          perfImgs: res.data.data.perf_imgs || [],
+          perfImgs: get(res, 'data.data.perf_imgs', []),
         })
       }, err => {
         message.error('网络错误！请稍后重试！')
@@ -46,28 +47,32 @@ export default class RoiRegion extends Component{
   }
   
   render() {
-    let { perfImgs = [] } = this.state;
-    if (perfImgs === undefined) {
-      perfImgs = [];
-    }
+    let { perfImgs } = this.state;
     return (
       <div className="region-container">
-        <Collapse defaultActiveKey={[0]}>
-          {
-            perfImgs.length!==0 && perfImgs.map((perf, index) => (
-              <Panel key={index} header={perf.text_info.split(' ')[0]}>
-                {
-                  this.getImgList(perf.perfusion.perfusion_imgs)
-                }
-                <div className="desc">
-                  {
-                    perf.text_info.slice(42, -1)
-                  }
-                </div>
-              </Panel>
-            ))
-          }
-        </Collapse>
+        {
+          perfImgs.length === 0 ? (
+            <Empty description="暂无数据"/>
+          ) : (
+            <Collapse defaultActiveKey={[0]}>
+              {
+                perfImgs.length!==0 && perfImgs.map((perf, index) => (
+                  <Panel key={index} header={perf.text_info.split(' ')[0]}>
+                    {
+                      this.getImgList(perf.perfusion.perfusion_imgs)
+                    }
+                    <div className="desc">
+                      {
+                        perf.text_info.slice(42, -1)
+                      }
+                    </div>
+                  </Panel>
+                ))
+              }
+            </Collapse>
+          )
+        }
+       
       </div>
     );
   }

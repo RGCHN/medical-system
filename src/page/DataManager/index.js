@@ -1,8 +1,8 @@
 import React from "react";
 import { withRouter, NavLink} from 'react-router-dom';
 import {Table, Space, Radio, Tag, Button, Input, Spin} from 'antd';
-import './index.scss'
-import { stateMap } from "../../utils/tools";
+import { stateMap, get } from "../../utils/tools";
+import './index.scss';
 
 
 const DEFAULT_DATA = [
@@ -246,7 +246,7 @@ class DataManager extends React.Component {
   componentDidMount() {
     this.http.get('/getPatients').then(res => {
       this.setState({
-        patientData: res.data.data.patientList,
+        patientData: get(res, 'data.data.patientList',[]),
         spinVisible: false,
       })
     }, err => {
@@ -261,8 +261,7 @@ class DataManager extends React.Component {
   
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-      },
+        },
       getCheckboxProps: record => ({
         disabled: record.name === 'Disabled User',
         name: record.name,

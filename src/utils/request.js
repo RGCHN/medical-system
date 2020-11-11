@@ -1,5 +1,6 @@
 import axios from 'axios';
 import history from "./history";
+import {message} from 'antd';
 export const http = axios.create({
   baseURL:'http://10.13.81.190:5050/api'
 })
@@ -15,15 +16,12 @@ http.interceptors.request.use(config=>{
 
 //响应拦截器 捕获错误
 http.interceptors.response.use(res => {
-  console.log('响应查看')
-  console.log(res);
   if (res.data.msg.toString() === "NoLogin") {
+    message.error('未登录请先登录！');
     history.push('/login');
   }
   return res
 }, err => {
-  console.log('错误查看')
-  console.log(err);
   return Promise.reject(err)
 })
 
@@ -42,15 +40,12 @@ modelHttp.interceptors.request.use(config=>{
 
 //响应拦截器 捕获错误
 modelHttp.interceptors.response.use(res => {
-  console.log('响应')
-  console.log(res);
   if (res.data.msg === "NoLogin") {
+    message.error('未登录请先登录！');
     history.push('/login');
   }
   return res
 }, err => {
-  console.log('错误查看')
-  console.log(err);
   return Promise.reject(err)
 })
 

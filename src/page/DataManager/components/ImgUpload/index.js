@@ -2,18 +2,10 @@ import React from "react";
 import {Upload, message, Select, Button, Carousel, Image, Spin, Progress} from 'antd';
 import { UploadOutlined }from '@ant-design/icons';
 import idContext from '../idContext';
+import {get} from '../../../../utils/tools';
 import './index.scss';
 
 const { Option } = Select;
-
-function getBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
 
 const settings = {
   infinite: false,
@@ -83,11 +75,11 @@ class ImgUpload extends React.Component {
           message.error('输入参数有误！请重新输入')
         } else {
           this.setState({
-            nonPerfusion: res.data.data.nonperf_res_imgs,
-            perfusionList: res.data.data.perf_res_imgs,
-            resultInfo: res.data.data.info,
-            resultSize: res.data.data.size,
-            resultId: res.data.data.resultID
+            nonPerfusion: get(res, 'data.data.nonperf_res_imgs', []),
+            perfusionList: get(res, 'data.data.perf_res_imgs', []),
+            resultInfo: get(res, 'data.data.info', ''),
+            resultSize: get(res, 'data.data.size', 0),
+            resultId: get(res, 'data.data.resultID', 0),
           })
         }
       }, err => {
@@ -148,18 +140,17 @@ class ImgUpload extends React.Component {
   componentDidMount() {
     const { data, timeStamp } = this.props;
     this.timeStamp = timeStamp;
-    console.log(`timeStamp ${timeStamp}`)
     if (data.id) {
       this.setState({
         mode: 'show',
-        ADCList: data.adc.adc_imgs,
-        DWIList: data.dwi.dwi_imgs,
-        nonPerfusion: data.non_perfusion.non_perfusion_imgs,
-        perfusionList: data.perfusion.perfusion_imgs,
-        modelType: data.modelType.toString(),
-        resultId: data['id'],
-        resultInfo: data.info,
-        resultSize: data.size,
+        ADCList: get(data, 'adc.adc_imgs', []),
+        DWIList: get(data, 'dwi.dwi_imgs', []),
+        nonPerfusion: get(data, 'non_perfusion.non_perfusion_imgs', []),
+        perfusionList: get(data, 'perfusion.perfusion_imgs', []),
+        modelType: get(data, 'modelType', 0).toString(),
+        resultId: get(data, 'id', 0),
+        resultInfo: get(data, 'info', ''),
+        resultSize: get(data, 'size', 0),
       })
     } else {
       this.setState({
@@ -273,10 +264,10 @@ class ImgUpload extends React.Component {
         if (adcResult.data.status === 'success' && dwiResult.data.status === 'success') {
           message.success('上传成功！')
           this.setState({
-            ADCList: adcResult.data.data.imgs,
-            adcFileName: adcResult.data.data.filename,
-            DWIList: dwiResult.data.data.imgs,
-            dwiFileName: dwiResult.data.data.filename,
+            ADCList: get(adcResult, 'data.data.imgs', []),
+            adcFileName: get(adcResult, 'data.data.filename', []),
+            DWIList: get(dwiResult, 'data.data.imgs', []),
+            dwiFileName: get(dwiResult, 'data.data.filename', []),
             uploadPercent: 100,
           })
         } else {
@@ -385,6 +376,7 @@ class ImgUpload extends React.Component {
                         type="primary"
                         onClick={this.goPredict}
                         loading={predicting}
+                        disabled={mode === 'show'}
                       >
                         {
                           predicting ? '正在预测' : '预测'

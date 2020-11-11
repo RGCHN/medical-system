@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import { Line } from '@ant-design/charts';
 import './index.scss';
 import idContext from '../../../idContext';
-import {message} from 'antd';
+import {get} from '../../../../../../utils/tools';
+import {Empty, message} from 'antd';
 
 const data = [
   { year: '2020-05-12', value: 98 },
@@ -31,7 +32,7 @@ export default class RoiBenefit extends Component{
   componentDidMount() {
     const id = this.context;
     this.modelHttp.post('getInfoTrend',{patientID: id}).then(res =>{
-      const benefitList = res.data.data.infoTrend;
+      const benefitList = get(res, 'data.data.infoTrend', []);
       this.setState({
         benefitList
       })
@@ -46,10 +47,13 @@ export default class RoiBenefit extends Component{
     const { benefitList } = this.state;
     const config = {...defaultConfig, data: benefitList};
     return (
-      <div className="trend-container">
-        <Line {...config} />
-      </div>
-
+      benefitList.length === 0 ? (
+        <Empty description="暂无数据"/>
+      ) : (
+        <div className="trend-container">
+          <Line {...config} />
+        </div>
+      )
     )
   }
 }

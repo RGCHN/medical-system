@@ -1,6 +1,7 @@
 import React from "react";
-import {Breadcrumb, Button, Input, Radio, Space, Table} from "antd";
+import {Breadcrumb, Button, Input, Radio, Space, Table, message} from "antd";
 import history from '../../utils/history';
+import { get } from '../../utils/tools';
 import { withRouter } from 'react-router-dom';
 import './index.scss';
 
@@ -33,11 +34,16 @@ class ProfileManager extends React.Component {
   componentDidMount() {
     this.http.get('/userInfo').then(
       res => {
-        this.setState({
-          userData: res.data.data.userInfo,
-        })
+        if (res.data.status === 'fail'){
+          message.error(res.data.msg);
+        } else {
+          const userData = get(res, 'data.data.userInfo', []);
+          this.setState({
+            userData
+          })
+        }
+        
       }, err => {
-        console.log(err);
       }
     )
   }

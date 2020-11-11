@@ -91,7 +91,6 @@ const DEFAULT_MODELS = [
   },
 ];
 
-
 export default class ModelManager extends React.Component {
   state = {
     modelTable:DEFAULT_MODELS,
@@ -99,6 +98,48 @@ export default class ModelManager extends React.Component {
     selectedItem:{}
   };
   
+  columns = [
+    {
+      title:'神经网络名称',
+      dataIndex:'modelName',
+      key:'modelName',
+      render: (text, record) => (
+        <div className="d-flex ai-end" onClick={() => this.openModal(record)}>
+          <div className='mr-2'>{text}</div>
+          <FundViewOutlined style={{color:'green', fontSize:'1.5rem'}} />
+        </div>
+      )
+    },
+    {
+      title:'上次训练时间',
+      dataIndex: 'lastTrainTime',
+      key: 'lastTrainTime'
+    },
+    {
+      title: '模型性能',
+      dataIndex: 'performance',
+      key: 'performance',
+      render: text =>(
+        <>
+          <span>特异度：{text.specificity} </span>
+          <Divider type="vertical" />
+          <span>灵敏度：{text.sensitive} </span>
+          <Divider type="vertical" />
+          <span>AUC：{text.AUC}</span>
+        </>
+      )
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (text, record, index) => (
+        <div >
+          <Button type='primary' className='mr-3' onClick={() => this.openModal(record)}>模型训练</Button>
+          {/*<DeleteFilled style={{fontSize:'1.5rem'}} onClick={() => this.deleteModel(index)}/>*/}
+        </div>
+      ),
+    },
+  ]
   openModal = record => {
     this.setState({
       selectedItem:record,
@@ -119,54 +160,17 @@ export default class ModelManager extends React.Component {
   
   }
   
+  deleteModel = index => {
+    let { modelTable } = this.state;
+    modelTable.splice(index, 1);
+    this.setState({
+      modelTable,
+    });
+  }
+  
   
   render() {
-    const {modelTable, modalVisible, selectedItem} = this.state;
-    console.log(selectedItem.params);
-    console.log(modalVisible)
-    const columns = [
-      {
-        title:'神经网络名称',
-        dataIndex:'modelName',
-        key:'modelName',
-        render: (text, record) => (
-          <div className="d-flex ai-end" onClick={() => this.openModal(record)}>
-            <div className='mr-2'>{text}</div>
-            <FundViewOutlined style={{color:'green', fontSize:'1.5rem'}} />
-          </div>
-        )
-      },
-      {
-        title:'上次训练时间',
-        dataIndex: 'lastTrainTime',
-        key: 'lastTrainTime'
-      },
-      {
-        title: '模型性能',
-        dataIndex: 'performance',
-        key: 'performance',
-        render: text =>(
-          <>
-            <span>特异度：{text.specificity} </span>
-            <Divider type="vertical" />
-            <span>灵敏度：{text.sensitive} </span>
-            <Divider type="vertical" />
-            <span>AUC：{text.AUC}</span>
-          </>
-        )
-      },
-      {
-        title: '操作',
-        key: 'action',
-        render: (text, record) => (
-          <div >
-            <Button type='primary' className='mr-3' onClick={() => this.openModal(record)}>模型训练</Button>
-            <DeleteFilled style={{fontSize:'1.5rem'}}/>
-          </div>
-        ),
-      },
-  
-    ]
+    const { modelTable, modalVisible, selectedItem } = this.state;
     return (
       <div className="data-manager-container px-3">
         <div className="form-container">
@@ -174,7 +178,7 @@ export default class ModelManager extends React.Component {
             <h2>我的模型</h2>
             <span className='text-light-gray ml-5'>共{modelTable.length}个模型</span>
           </div>
-          <Table columns={columns} dataSource={modelTable}  pagination = {{position:['bottomCenter']}}/>
+          <Table columns={this.columns} dataSource={modelTable}  pagination = {{position:['bottomCenter']}}/>
           <Modal title="设置训练参数"
                  visible={modalVisible}
                  onOk={this.setParams}

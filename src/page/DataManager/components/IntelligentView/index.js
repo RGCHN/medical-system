@@ -1,9 +1,9 @@
 import React from "react";
-import {Button, Collapse, message, Modal, DatePicker, Spin} from 'antd';
-import { EditFilled, CloseOutlined } from '@ant-design/icons'
+import {Button, Collapse, message, Modal, DatePicker, Spin, Empty} from 'antd';
 import ImgUpload from "../ImgUpload";
 import idContext from '../idContext';
 import './index.scss'
+import {get} from '../../../../utils/tools';
 
 const { Panel } = Collapse;
 
@@ -71,14 +71,15 @@ export default class IntelligentView extends React.Component{
     const id = this.context;
     this.modelHttp.post('/getResultsByPatient',{patientID:id}).then(
       res => {
-        if (res.data.status === "fail") {
+        if (get(res, 'data.status', 'fail') === "fail") {
           message.error(res.data.msg);
           this.setState({
             spinVisible: false,
           })
         } else {
+          let rl = get(res, 'data.data.results', [])
           this.setState({
-            recordList: res.data.data.results || [],
+            recordList: rl === null ? [] : rl,
             spinVisible: false,
           })
         }
@@ -92,7 +93,7 @@ export default class IntelligentView extends React.Component{
   }
   
   render(){
-    const { visible, confirmLoading, recordList = [], defaultKey, spinVisible} = this.state;
+    const { visible, confirmLoading, recordList, defaultKey, spinVisible} = this.state;
   
     if (spinVisible) {
       return (
@@ -115,15 +116,21 @@ export default class IntelligentView extends React.Component{
           >
             请选择就诊日期：<DatePicker onChange={this.onChange} />
           </Modal>
-          <Collapse defaultActiveKey={[defaultKey]}>
-            {
-              recordList.length !== 0 && recordList.map((record,index) => (
-                <Panel key={index} header={record.time.slice(0, 11)} /*extra={this.genExtra(index)}*/>
-                  <ImgUpload data={record} timeStamp={new Date(record.time).getTime()}/>
-                </Panel>
-              ))
-            }
-          </Collapse>
+          {
+            recordList.length === 0 ? (
+              <Empty description="暂无数据"/>
+            ) : (
+              <Collapse defaultActiveKey={[defaultKey]}>
+                {
+                  recordList.map((record,index) => (
+                    <Panel key={index} header={record.time.slice(0, 11)} /*extra={this.genExtra(index)}*/>
+                      <ImgUpload data={record} timeStamp={new Date(record.time).getTime()}/>
+                    </Panel>
+                  ))
+                }
+              </Collapse>
+            )
+          }
         </div>
       )
     }

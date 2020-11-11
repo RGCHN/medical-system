@@ -1,13 +1,11 @@
 import React from 'react';
-import { Layout, Menu, Divider,Dropdown} from 'antd';
+import { Layout, Menu, Divider} from 'antd';
 import { Router, NavLink, Switch,Route } from 'react-router-dom';
-import { BellOutlined, DownOutlined } from '@ant-design/icons';
 import routes from "./routes"
 import history from "./utils/history";
 import { renderRoutes } from "react-router-config";
 import Login from "./page/Login";
 import Register from "./page/Register";
-import { clearToken } from './utils/tools';
 import 'antd/dist/antd.css';
 import './index.scss';
 

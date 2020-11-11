@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import { Line } from '@ant-design/charts';
-import './index.scss';
 import idContext from '../../../idContext';
-import {message} from 'antd';
+import {Empty, message} from 'antd';
+import {get} from '../../../../../../utils/tools';
+import './index.scss';
 
 const data = [
   { year: '2020-05-12', value: 20.78 },
@@ -31,7 +32,7 @@ export default class RoiTrend extends Component{
   componentDidMount() {
     const id = this.context;
     this.modelHttp.post('getSizeTrend',{patientID: id}).then(res =>{
-      const trendList = res.data.data.sizeTrend;
+      const trendList = get(res, 'data.data.sizeTrend', []);
       this.setState({
         trendList
       })
@@ -46,10 +47,13 @@ export default class RoiTrend extends Component{
     const { trendList } = this.state;
     const config = { ...defaultConfig, data: trendList}
     return (
-      <div className="trend-container">
-        <Line {...config} />
-      </div>
-
+      trendList.length === 0 ? (
+        <Empty description="暂无数据"/>
+      ) : (
+        <div className="trend-container">
+          <Line {...config} />
+        </div>
+      )
     )
   }
 };
